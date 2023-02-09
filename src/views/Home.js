@@ -797,8 +797,10 @@ export const Home = () => {
                             </div>
                         </div>
                         <p className="mt-4 self-center sm:hidden text-[#e48b24] flex items-center gap-1">fee = {Number(cost) > 0 ? `${ethers.utils.formatEther(cost)} ${getSymbol()}` : 'N/A'}<img data-tooltip-target="tooltip-fee" className="w-[15px] h-[15px]" src={info} alt="info" /></p>
-                        {chainId !== undefined && <label className="block mt-3 text-sm font-medium text-center text-gray-900 sm:hidden dark:text-gray-300">
-                            You don't have any {getSymbol(chainId)}? <a className="text-[#e48b24]" href={process.env.REACT_APP_TRANSACK_URL} rel="noopener noreferrer" target="popup" onClick={() => window.open(process.env.REACT_APP_TRANSACK_URL, 'Buy Token', 'width=800,height=600')} >Buy Crypto</a>
+                        {chainId !== undefined && 
+                        <label className="block mt-3 text-sm font-medium text-center text-gray-900 sm:hidden dark:text-gray-300">
+                            You don't have any {getSymbol(chainId)}? 
+                            <a className="text-[#e48b24]" href="#" rel="noopener noreferrer" onClick={() => window.open(process.env.REACT_APP_TRANSACK_URL, 'Buy Token', 'width=800,height=600,popup')} >Buy Crypto</a>
                         </label>}
                         <button type="submit" className={`flex sm:hidden items-center justify-center self-center w-3/4 mt-4 text-white focus:ring-4 focus:ring-[#f7b541] font-medium rounded-lg text-sm px-12 py-2.5 text-center dark:bg-[#f7a531] dark:hover:bg-[#f7b541] dark:focus:ring-[#f7b541] ${agree && !loading ? 'bg-[#e48b24] hover:bg-[#f7a531]' : 'pointer-events-none bg-gray-500'}`} onClick={onSubmit} >
                             {loading && <svg role="status" className="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -928,8 +930,9 @@ export const Home = () => {
                             This fee does not include the network fee, which is usually very small (except eth), the final fee will be displayed in your metamask
                             <div className="tooltip-arrow" data-popper-arrow></div>
                         </div>
-                        {chainId !== undefined && <label className="hidden mt-3 text-sm font-medium text-center text-gray-900 sm:block dark:text-gray-300">
-                            You don't have any {getSymbol(chainId)}? <a className="text-[#e48b24]" href={process.env.REACT_APP_TRANSACK_URL} rel="noopener noreferrer" target="popup" onClick={() => window.open(process.env.REACT_APP_TRANSACK_URL, 'Buy Token', 'width=800,height=600')} >Buy Crypto</a>
+                        {chainId !== undefined && 
+                        <label className="hidden mt-3 text-sm font-medium text-center text-gray-900 sm:block dark:text-gray-300">
+                            You don't have any {getSymbol(chainId)}? <a className="text-[#e48b24]" href="#" rel="noopener noreferrer" onClick={() => window.open(process.env.REACT_APP_TRANSACK_URL, 'Buy Token', 'width=800,height=600')} >Buy Crypto</a>
                         </label>}
                         <button type="submit" className={`hidden sm:flex items-center justify-center self-center w-3/4 mt-2 text-white  focus:ring-4 focus:ring-[#f7b541] font-medium rounded-lg text-sm px-12 py-2.5 text-center dark:bg-[#f7a531] dark:hover:bg-[#f7b541] dark:focus:ring-[#f7b541] ${agree && !loading ? 'bg-[#e48b24] hover:bg-[#f7a531]' : 'pointer-events-none bg-gray-500'}`} onClick={onSubmit}>
                             {loading && <svg role="status" className="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
