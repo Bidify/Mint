@@ -23,10 +23,12 @@ export const NetworkId = {
   EVMOS: 9001,
   MOONRIVER: 1285,
   ARBITRUM: 42161,
-  OPTIMISM: 10
+  OPTIMISM: 10,
+  zkSyncTestnet: 280,
+  zkSyncMainnet: 324,
   // FUJI: 43113,
 };
-export const supportedChainIds = [ 137, 56, 61, 100, 1987, 43114, 4, 1285, 9001, 42161, 10]
+export const supportedChainIds = [ NetworkId.POLYGON, NetworkId.BSC, NetworkId.ETC, NetworkId.GNOSIS, NetworkId.ETHERGEM, NetworkId.AVALANCHE, NetworkId.RINKEBY, NetworkId.MOONRIVER, NetworkId.EVMOS, NetworkId.ARBITRUM, NetworkId.OPTIMISM, NetworkId.zkSyncMainnet]
 export const addresses = {
   [NetworkId.POLYGON]: "0x683F246253934862B86b042476837a5e9B91E326", //verified
   [NetworkId.RINKEBY]: "0x0f79f4239F343fc932F357eFAAeE405a90d28e42", //verified
@@ -38,7 +40,9 @@ export const addresses = {
   [NetworkId.EVMOS]: "0x86E25f1e266eA4831b3CBb68164753DcbA30D047", //verified
   [NetworkId.MOONRIVER]: "0x86E25f1e266eA4831b3CBb68164753DcbA30D047", //verified
   [NetworkId.ARBITRUM]: "0x86E25f1e266eA4831b3CBb68164753DcbA30D047", //verified
-  [NetworkId.OPTIMISM]: "0x04Fe964916B24deb3C2D7E6A8d9873b054E52492" //verified
+  [NetworkId.OPTIMISM]: "0x04Fe964916B24deb3C2D7E6A8d9873b054E52492", //verified
+  [NetworkId.zkSyncTestnet]: "0x694DCbFBD60e8C4923B130570Ba55Ba237c4f12A",
+  [NetworkId.zkSyncMainnet]: "0x694DCbFBD60e8C4923B130570Ba55Ba237c4f12A",
 };
 export const standard = {
   [NetworkId.POLYGON]: "0x78A46265BedEfF1f18C3696dB01669A76B7833C8",
@@ -51,7 +55,9 @@ export const standard = {
   [NetworkId.MOONRIVER]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
   [NetworkId.EVMOS]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
   [NetworkId.ARBITRUM]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
-  [NetworkId.OPTIMISM]: "0xC254F215840EB03Ef7ff7E2707CB5787d529579a"
+  [NetworkId.OPTIMISM]: "0xC254F215840EB03Ef7ff7E2707CB5787d529579a",
+  [NetworkId.zkSyncTestnet]: "0x464Efc76aedddAD363dAd78375873456C0a21BBc",
+  [NetworkId.zkSyncMainnet]: "0x464Efc76aedddAD363dAd78375873456C0a21BBc",
 }
 // export const platforms = {
 //   [NetworkId.POLYGON]: "0x175bc1bACF1fc054A5CA30AdeC155f00AaA2ce06",
@@ -59,19 +65,6 @@ export const standard = {
 //   [NetworkId.ETHERGEM]: "0x43dF4869458f2B81782cE29951d057253a68Ffc6",
 //   [NetworkId.AVALANCHE]: "0x0c11e7AC0864624e22935748ea092A27bD7B4924"
 // }
-export const explorer = {
-  [NetworkId.POLYGON]: "https://polygonscan.com",
-  [NetworkId.RINKEBY]: "https://rinkeby.etherscan.io",
-  [NetworkId.ETHERGEM]: "https://blockscout.egem.io",
-  [NetworkId.AVALANCHE]: "https://snowtrace.io",
-  [NetworkId.BSC]: "https://bscscan.com",
-  [NetworkId.GNOSIS]: "https://xdai.tokenview.com/en", //"https://blockscout.com/xdai/mainnet/",
-  [NetworkId.ETC]: "https://etc.tokenview.com/en", //"https://blockscout.com/etc/mainnet/",
-  [NetworkId.MOONRIVER]: "https://moonriver.moonscan.io",
-  [NetworkId.EVMOS]: "https://evm.evmos.org",
-  [NetworkId.ARBITRUM]: "https://arbiscan.io",
-  [NetworkId.OPTIMISM]: "https://optimistic.etherscan.io"
-}
 
 /**
  * Network details required to add a network to a user's wallet, as defined in EIP-3085 (https://eips.ethereum.org/EIPS/eip-3085)
@@ -81,7 +74,9 @@ export const NETWORKS = {
   [NetworkId.POLYGON]: {
     image: matic,
     label: "Polygon",
-    chainId: 137
+    chainId: 137,
+    explorer: "https://polygonscan.com",
+    url: "https://polygon-rpc.com",
   },
   // [NetworkId.POLYGON_TESTNET]: {
   //   image: matic,
@@ -91,58 +86,94 @@ export const NETWORKS = {
   // [NetworkId.ETHEREUM]: {
   //   image: eth,
   //   label: "Ethereum",
-  //   chainId: 1
+  //   chainId: 1,
+  //   url: "https://mainnet.infura.io/v3/0c8149f8e63b4b818d441dd7f74ab618"
   // },
   [NetworkId.BSC]: {
     image: bnb,
     label: "Binance Smart Chain",
     chainId: 56,
+    explorer: "https://bscscan.com",
+    url: "https://bsc-dataseed1.binance.org",
   },
   [NetworkId.ETC]: {
     image: etc,
     label: "Ethereum Classic",
-    chainId: 61
+    chainId: 61,
+    explorer: "https://etc.tokenview.com/en", //"https://blockscout.com/etc/mainnet/",
+    url: "https://www.ethercluster.com/etc",
   },
   [NetworkId.GNOSIS]: {
     image: gnosis,
     label: "Gnosis Chain",
-    chainId: 100
+    chainId: 100,
+    explorer: "https://xdai.tokenview.com/en", //"https://blockscout.com/xdai/mainnet/",
+    url: "https://rpc.gnosischain.com",
   },
   [NetworkId.ETHERGEM]: {
     image: egem,
     label: "Ethergem",
-    chainId: 1987
+    chainId: 1987,
+    explorer: "https://blockscout.egem.io",
+    url: "https://lb.rpc.egem.io",
   },
   [NetworkId.AVALANCHE]: {
     image: avax,
     label: "Avalanche",
-    chainId: 43114
+    chainId: 43114,
+    explorer: "https://snowtrace.io",
+    url: "https://api.avax.network/ext/bc/C/rpc",
   },
   [NetworkId.RINKEBY]: {
     image: eth,
     label: "Rinkeby",
-    chainId: 4
+    chainId: 4,
+    explorer: "https://rinkeby.etherscan.io",
+    url: "https://rinkeby.infura.io/v3/0c8149f8e63b4b818d441dd7f74ab618",
   },
   [NetworkId.MOONRIVER]: {
     image: moonriver,
     label: "Moonriver",
-    chainId: 1285
+    chainId: 1285,
+    explorer: "https://moonriver.moonscan.io",
+    url: "https://rpc.api.moonriver.moonbeam.network",
   },
   [NetworkId.EVMOS]: {
     image: evmos,
     label: "Evmos",
-    chainId: 9001
+    chainId: 9001,
+    explorer: "https://evm.evmos.org",
+    url: "https://eth.bd.evmos.org:8545",
   },
   [NetworkId.ARBITRUM]: {
     image: "https://bridge.arbitrum.io/logo.png",
     label: "Arbitrum",
-    chainId: 42161
+    chainId: 42161,
+    explorer: "https://arbiscan.io",
+    url: ""
   },
   [NetworkId.OPTIMISM]: {
     image: "https://assets-global.website-files.com/611dbb3c82ba72fbc285d4e2/611fd32ddac3c1856c306c37_optimism%20logo%20icon.svg",
     label: "Optimism",
-    chainId: 10
+    chainId: 10,
+    explorer: "https://optimistic.etherscan.io",
+    url: ""
+  },
+  [NetworkId.zkSyncTestnet]: {
+    image: "/zksync-arrows.svg",
+    label: "zkSyncTestnet",
+    chainId: 280,
+    explorer: "https://goerli.explorer.zksync.io", //"https://zksync2-testnet.zkscan.io/",
+    url: "https://testnet.era.zksync.dev"
+  },
+  [NetworkId.zkSyncMainnet]: {
+    image: "/zksync-arrows.svg",
+    label: "zkSyncMainnet",
+    chainId: 324,
+    explorer: "https://explorer.zksync.io", //"https://zksync2-mainnet.zkscan.io/",
+    url: "https://mainnet.era.zksync.io"
   }
+  
   // [NetworkId.KLAYTN]: {
   //   image: klaytn,
   //   label: "Klaytn Mainnet",
@@ -155,6 +186,28 @@ export const NETWORKS = {
   // },
   
 };
+
+export const baseUrl = "https://api.bidify.org/api"
+// export const baseUrl = "http://localhost:8080/api"
+export const getLogUrl = {
+  [NetworkId.POLYGON]: "https://api.polygonscan.com/api?module=logs&action=getLogs",
+  [NetworkId.AVALANCHE]: "https://api.snowtrace.io/api?module=logs&action=getLogs",
+  [NetworkId.RINKEBY]: "https://api-rinkeby.etherscan.io/api?module=logs&action=getLogs",
+  [NetworkId.ETHERGEM]: "https://blockscout.egem.io/api?module=logs&action=getLogs",
+  [NetworkId.BSC]: "https://api.bscscan.com/api?module=logs&action=getLogs",
+  [NetworkId.EVMOS]: "https://evm.evmos.org/api?module=logs&action=getLogs",
+  [NetworkId.MOONRIVER]: "https://api-moonriver.moonscan.io/api?module=logs&action=getLogs",
+  [NetworkId.GNOSIS]: "https://blockscout.com/xdai/mainnet/api?module=logs&action=getLogs",
+  [NetworkId.ETC]: "https://blockscout.com/etc/mainnet/api?module=logs&action=getLogs",
+  [NetworkId.zkSyncTestnet]: "https://zksync2-testnet.zkscan.io/api?module=logs&action=getLogs",
+  [NetworkId.zkSyncMainnet]: "https://zksync2-mainnet.zkscan.io/api?module=logs&action=getLogs",
+}
+export const snowApi = {
+  43114: "Y72B4EMH42SYS5C3RGGIDJM9HPQKYUSUTH",
+  137: "XKIRV2YEWTDJIXRQSXB42PT78P1879NTJT",
+  4: "1GT2QR7K76T2EAU72UEP43M82W72TMQAU6",
+  56: "WYSBB1UFVWFNRVRMCRZ6PMI5XD3K1D2A9F"
+}
 
 export const ABI = [
   {
@@ -760,6 +813,8 @@ export const BIDIFY = {
     [NetworkId.BSC]: "0xA878b8eB62B4a25308CA75B0c89C718F1448B50F", //new tested
     [NetworkId.OPTIMISM]: "",
     [NetworkId.ARBITRUM]: "",
+    [NetworkId.zkSyncTestnet]: "0x6eB662c9464F5bc1476efe8E1834E0d616568a8b",
+    [NetworkId.zkSyncMainnet]: "0x6eB662c9464F5bc1476efe8E1834E0d616568a8b",
   },
   abi: [
     {
@@ -1338,44 +1393,4 @@ export const BIDIFY = {
       "type": "receive"
     }
   ],
-};
-
-export const baseUrl = "https://api.bidify.org/api"
-// export const baseUrl = "http://localhost:8080/api"
-export const getLogUrl = {
-  [NetworkId.POLYGON]: "https://api.polygonscan.com/api?module=logs&action=getLogs",
-  [NetworkId.AVALANCHE]: "https://api.snowtrace.io/api?module=logs&action=getLogs",
-  [NetworkId.RINKEBY]: "https://api-rinkeby.etherscan.io/api?module=logs&action=getLogs",
-  [NetworkId.ETHERGEM]: "https://blockscout.egem.io/api?module=logs&action=getLogs",
-  [NetworkId.BSC]: "https://api.bscscan.com/api?module=logs&action=getLogs",
-  [NetworkId.EVMOS]: "https://evm.evmos.org/api?module=logs&action=getLogs",
-  [NetworkId.MOONRIVER]: "https://api-moonriver.moonscan.io/api?module=logs&action=getLogs",
-  [NetworkId.GNOSIS]: "https://blockscout.com/xdai/mainnet/api?module=logs&action=getLogs",
-  [NetworkId.ETC]: "https://blockscout.com/etc/mainnet/api?module=logs&action=getLogs"
-}
-export const snowApi = {
-  43114: "Y72B4EMH42SYS5C3RGGIDJM9HPQKYUSUTH",
-  137: "XKIRV2YEWTDJIXRQSXB42PT78P1879NTJT",
-  4: "1GT2QR7K76T2EAU72UEP43M82W72TMQAU6",
-  56: "WYSBB1UFVWFNRVRMCRZ6PMI5XD3K1D2A9F"
-}
-
-export const URLS = {
-  // 1: "https://mainnet.infura.io/v3/0c8149f8e63b4b818d441dd7f74ab618",
-  // 3: "https://ropsten.infura.io/v3/0c8149f8e63b4b818d441dd7f74ab618",
-  // 80001: "https://matic-testnet-archive-rpc.bwarelabs.com",
-  // 43113: "https://api.avax-test.network/ext/bc/C/rpc",
-  // 5: "https://goerli.infura.io/v3/0c8149f8e63b4b818d441dd7f74ab618",
-  [NetworkId.RINKEBY]: "https://rinkeby.infura.io/v3/0c8149f8e63b4b818d441dd7f74ab618",
-  [NetworkId.ETHERGEM]: "https://lb.rpc.egem.io",
-  [NetworkId.AVALANCHE]: "https://api.avax.network/ext/bc/C/rpc",
-  [NetworkId.POLYGON]: "https://polygon-rpc.com",
-  [NetworkId.GNOSIS]: "https://rpc.gnosischain.com",
-  [NetworkId.ETC]: "https://www.ethercluster.com/etc",
-  [NetworkId.EVMOS]: "https://eth.bd.evmos.org:8545",
-  [NetworkId.MOONRIVER]: "https://rpc.api.moonriver.moonbeam.network",
-  [NetworkId.BSC]: "https://bsc-dataseed1.binance.org",
-  [NetworkId.OPTIMISM]: "",
-  [NetworkId.ARBITRUM]: "",
-
 };

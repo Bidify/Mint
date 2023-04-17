@@ -17,7 +17,7 @@ import { useWeb3React } from "@web3-react/core"
 import { FetchWrapper } from "use-nft";
 import { injected } from "../connectors"
 import { switchNetwork } from "../wallet"
-import { addresses, ABI, NETWORKS, supportedChainIds, explorer, BIDIFY, getLogUrl, snowApi, baseUrl, ERC721_ABI, standard, URLS } from "../constants"
+import { addresses, ABI, NETWORKS, supportedChainIds, BIDIFY, getLogUrl, snowApi, baseUrl, ERC721_ABI, standard } from "../constants"
 import { ethers, Contract } from "ethers"
 import { Buffer } from "buffer"
 import axios from "axios"
@@ -42,6 +42,8 @@ const modalContents = {
 
 export const Home = () => {
     const { account, library, chainId, activate } = useWeb3React()
+    console.log('library', library)
+    console.log('chainId', chainId)
     const [buffer, setBuffer] = useState()
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
@@ -140,6 +142,8 @@ export const Home = () => {
             case 61: return "ETC"
             case 1285: return "MOVR"
             case 9001: return "EVMOS"
+            case 280: return "ETH"
+            case 324: return "ETH"
             default: return "Currency"
         }
     }
@@ -330,7 +334,7 @@ export const Home = () => {
                 );
                 break;
             case 1987: case 43114: case 137: case 56: case 9001: case 1285: case 61: case 100:
-                provider = new ethers.providers.JsonRpcProvider(URLS[chainId])
+                provider = new ethers.providers.JsonRpcProvider(NETWORKS[chainId].url)
                 break
             default:
                 console.log("select valid chain");
@@ -503,24 +507,26 @@ export const Home = () => {
             if (!exist) {
                 txHash.events.shift()
             }
+            console.log('txHash', txHash)
             let tokenIds = []
-            if (chainId === 4 || chainId === 43114 || chainId === 56 || chainId === 100 || chainId === 61 || chainId === 1285 || chainId === 9001 || chainId === 10 || chainId === 42161) {
-                tokenIds = txHash.events.map((event) => {
-                    const hex = event.topics[3]
-                    return Number(ethers.utils.hexValue(hex))
-                })
-            }
-            if (chainId === 1987) {
-                tokenIds = txHash.events.map((event) => {
-                    const hex = event.topics[3]
-                    return Number(ethers.utils.hexValue(hex))
-                })
-            }
-            else if (chainId === 137) {
+            // if (chainId === 4 || chainId === 43114 || chainId === 56 || chainId === 100 || chainId === 61 || chainId === 1285 || chainId === 9001 || chainId === 10 || chainId === 42161) {
+            // }
+            if (chainId === 137) {
                 for (let i = 1; i < txHash.events.length - 3; i++) {
                     const hex = txHash.events[i].topics[3]
                     tokenIds.push(Number(ethers.utils.hexValue(hex)))
                 }
+            } else if (chainId === 280 || chainId === 324) {
+                for (let i = 0; i < txHash.events.length; i++) {
+                    if (txHash.events[i].topics.length < 4) continue;
+                    const hex = txHash.events[i].topics[3]
+                    tokenIds.push(Number(ethers.utils.hexValue(hex)))
+                }
+            } else {
+                tokenIds = txHash.events.map((event) => {
+                    const hex = event.topics[3]
+                    return Number(ethers.utils.hexValue(hex))
+                })
             }
 
             if (forSale) {
@@ -666,17 +672,17 @@ export const Home = () => {
                         <div className="p-6 pb-0 text-center">
                             <img className="mx-auto -mt-12 mb-8 w-12 h-12 bg-[#FFEAD6] rounded-full p-2 text-gray-400 dark:text-gray-200" src={bidifyLogo} alt="logo" />
                             <h3 className="mb-5 text-xl font-medium text-[#F09132] ">Congratulations on your newly Minted NFT</h3>
-                            <a href={`${explorer[chainId]}/tx/${transaction}`} target="_blank" rel="noreferrer" className="self-center mt-4 text-white bg-[#e48b24] hover:bg-[#f7a531] focus:ring-4 focus:ring-[#f7b541] font-medium rounded-lg text-sm px-8 mx-auto py-2.5 text-center">
+                            <a href={`${NETWORKS[chainId].explorer}/tx/${transaction}`} target="_blank" rel="noreferrer" className="self-center mt-4 text-white bg-[#e48b24] hover:bg-[#f7a531] focus:ring-4 focus:ring-[#f7b541] font-medium rounded-lg text-sm px-8 mx-auto py-2.5 text-center">
                                 View Transaction
                             </a>
                             <img className={`mt-8 min-w-[240px] max-w-[240px] mx-auto rounded-lg ${buffer ? "" : "animate-pulse"}`} src={buffer ? `data:${type};base64,${buffer.toString('base64')}` : preview} alt="preview" />
                             <p className="text-xl mt-4 font-bold tracking-tight break-words text-[#AA5E0D]">{name}</p>
                             <div className="flex items-center justify-center gap-3 mt-6">
                                 <p className="text-[#F09132]">Share with the world</p>
-                                <a href={`https://twitter.com/intent/tweet?url=${explorer[chainId]}/tx/${transaction}&text=Please%20check%20out%20this%20${NETWORKS[chainId]?.label}%20NFT%20I%20just%20minted%20on%20mint.bidify.org`}><img src={tweeter} alt="social" /></a>
+                                <a href={`https://twitter.com/intent/tweet?url=${NETWORKS[chainId].explorer}/tx/${transaction}&text=Please%20check%20out%20this%20${NETWORKS[chainId]?.label}%20NFT%20I%20just%20minted%20on%20mint.bidify.org`}><img src={tweeter} alt="social" /></a>
                                 {/* Please%20check%20out%20this%20${NETWORKS[chainId].label}%20NFT%20I%20just%20minted%20on%20mint.bidify.org */}
-                                <a href={`https://www.facebook.com/sharer/sharer.php?u=${explorer[chainId]}/tx/${transaction}&quote=Please%20check%20out%20this%20${NETWORKS[chainId]?.label}%20NFT%20I%20just%20minted%20on%20mint.bidify.org`}><img src={facebook} alt="social" /></a>
-                                <a href={`https://t.me/share/url?url=${explorer[chainId]}/tx/${transaction}&text=Please%20check%20out%20this%20${NETWORKS[chainId]?.label}%20NFT%20I%20just%20minted%20on%20mint.bidify.org`}><img src={telegram} alt="social" /></a>
+                                <a href={`https://www.facebook.com/sharer/sharer.php?u=${NETWORKS[chainId].explorer}/tx/${transaction}&quote=Please%20check%20out%20this%20${NETWORKS[chainId]?.label}%20NFT%20I%20just%20minted%20on%20mint.bidify.org`}><img src={facebook} alt="social" /></a>
+                                <a href={`https://t.me/share/url?url=${NETWORKS[chainId].explorer}/tx/${transaction}&text=Please%20check%20out%20this%20${NETWORKS[chainId]?.label}%20NFT%20I%20just%20minted%20on%20mint.bidify.org`}><img src={telegram} alt="social" /></a>
                             </div>
                         </div>
 

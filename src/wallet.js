@@ -7,7 +7,7 @@ import { NETWORKS } from "./constants";
  * @param _chainId
  */
  export const switchNetwork = async (_chainId) => {
-    // console.log("herer", activate)
+    // console.log("herer", _chainId)
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
