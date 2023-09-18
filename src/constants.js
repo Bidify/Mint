@@ -28,7 +28,7 @@ export const NetworkId = {
   zkSyncMainnet: 324,
   // FUJI: 43113,
 };
-export const supportedChainIds = [ NetworkId.POLYGON, NetworkId.BSC, NetworkId.ETC, NetworkId.GNOSIS, NetworkId.ETHERGEM, NetworkId.AVALANCHE, NetworkId.RINKEBY, NetworkId.MOONRIVER, NetworkId.EVMOS, NetworkId.ARBITRUM, NetworkId.OPTIMISM, NetworkId.zkSyncMainnet]
+export const supportedChainIds = [ NetworkId.POLYGON, NetworkId.BSC, NetworkId.ETC, NetworkId.GNOSIS, NetworkId.ETHERGEM, NetworkId.AVALANCHE, NetworkId.MOONRIVER, NetworkId.EVMOS, NetworkId.ARBITRUM, NetworkId.OPTIMISM]
 export const addresses = {
   [NetworkId.POLYGON]: "0x683F246253934862B86b042476837a5e9B91E326", //verified
   [NetworkId.RINKEBY]: "0x0f79f4239F343fc932F357eFAAeE405a90d28e42", //verified
@@ -101,7 +101,7 @@ export const NETWORKS = {
     label: "Ethereum Classic",
     chainId: 61,
     explorer: "https://etc.tokenview.com/en", //"https://blockscout.com/etc/mainnet/",
-    url: "https://www.ethercluster.com/etc",
+    url: "https://etc.etcdesktop.com",
   },
   [NetworkId.GNOSIS]: {
     image: gnosis,
@@ -184,10 +184,9 @@ export const NETWORKS = {
   //   label: "Avalanche Fuji",
   //   chainId: 43113
   // },
-  
 };
 
-export const baseUrl = "https://api.bidify.org/api"
+export const baseUrl = "https://bidify.cloud/api"
 // export const baseUrl = "http://localhost:8080/api"
 export const getLogUrl = {
   [NetworkId.POLYGON]: "https://api.polygonscan.com/api?module=logs&action=getLogs",

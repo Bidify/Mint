@@ -6,13 +6,16 @@ import { NETWORKS } from "./constants";
  * Prompt the user to add BSC as a network on Metamask, or switch to BSC if the wallet is on a different network
  * @param _chainId
  */
- export const switchNetwork = async (_chainId) => {
+export const switchNetwork = async (_chainId) => {
     // console.log("herer", _chainId)
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
         params: [{ chainId: `0x${_chainId.toString(16)}` }],
       });
+      if (_chainId === 61) {
+        window.location.reload();
+      }
     } catch (error) {
       // This error code indicates that the chain has not been added to MetaMask.
       console.log("error", error)

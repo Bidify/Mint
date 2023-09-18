@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
+import { NFTStorage } from 'nft.storage';
 import bannerImg from "../assets/images/heroIllustration.svg"
 import bidifyLogo from "../assets/images/bidify.png"
 import disturb from "../assets/images/disturb.png"
@@ -25,9 +26,8 @@ import MailchimpSubscribe from "react-mailchimp-subscribe";
 import Terms from "../assets/docs/Bidify_Mint_Terms_and_Conditions.pdf";
 import Policy from "../assets/docs/Bidify_Mint_Privacy_Policy.pdf";
 // import { create } from 'ipfs-http-client'
-import fleekStorage from '@fleekhq/fleek-storage-js'
 
-
+const client = new NFTStorage({token: process.env.REACT_APP_STORAGE_KEY});
 
 const postUrl = `https://cryptosi.us2.list-manage.com/subscribe/post?u=${process.env.REACT_APP_MAILCHIMP_U}&id=${process.env.REACT_APP_MAILCHIMP_ID}`;
 // const ipfs = create({ host: 'ipfs.infura.io', port: 5001, protocol: 'https', apiPath: '/ipfs/api/v0' })
@@ -41,9 +41,7 @@ const modalContents = {
 
 
 export const Home = () => {
-    const { account, library, chainId, activate } = useWeb3React()
-    console.log('library', library)
-    console.log('chainId', chainId)
+    const { account, library, chainId, activate, deactivate } = useWeb3React()
     const [buffer, setBuffer] = useState()
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
@@ -387,27 +385,29 @@ export const Home = () => {
         return finalResult;
     };
     useEffect(() => {
-        if (library) {
+        console.log("*****************", account)
+        if (account && library && addresses[chainId]) {
             const getCost = async () => {
                 if (amount) {
                     const signer = library.getSigner()
                     const BidifyMinter = new ethers.Contract(addresses[chainId], ABI, signer)
                     const mintCost = await BidifyMinter.calculateCost(amount)
+                    // console.log(mintCost)
                     setCost(mintCost)
                 }
                 else setCost(0)
             }
             getCost()
             getData()
+        } else {
+            deactivate();
         }
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [amount, library, chainId])
 
     const getData = async () => {
         const signer = library.getSigner()
         try {
-
             const BidifyMinter = new ethers.Contract(addresses[chainId], ABI, signer)
             const collections = await BidifyMinter.getCollections()
             setCollections(collections)
@@ -428,68 +428,36 @@ export const Home = () => {
 
         setLoading(true)
         setModalContent("ipfs")
-
-        const files = await fleekStorage.listFiles({
-            apiKey: process.env.REACT_APP_API_KEY,
-            apiSecret: process.env.REACT_APP_API_SECRET,
-            bucket: process.env.REACT_APP_BUCKET,
-            getOptions: [
-                'key',
-                'hash',
-                'publicUrl'
-            ],
-        })
-        const key = files.length
-        let uploadedFile
-        try {
-            uploadedFile = await fleekStorage.upload({
-                apiKey: process.env.REACT_APP_API_KEY,
-                apiSecret: process.env.REACT_APP_API_SECRET,
-                bucket: process.env.REACT_APP_BUCKET,
-                key: key.toString(),
-                data: buffer,
-                httpUploadProgressCallback: (event) => {
-                    console.log(Math.round(event.loaded / event.total * 100) + '% done');
-                }
-            })
-        } catch (e) {
-            console.log("err while uploading image", e)
-            setLoading(false)
-        }
-        // ipfs.add(buffer).then(async (result) => {
-        const tokenURI = {
-            name,
-            description,
-            image: uploadedFile.publicUrl
-        }
-        let added
-        try {
-            added = await fleekStorage.upload({
-                apiKey: process.env.REACT_APP_API_KEY,
-                apiSecret: process.env.REACT_APP_API_SECRET,
-                bucket: process.env.REACT_APP_BUCKET,
-                key: key + 1 + ".json",
-                data: Buffer(JSON.stringify(tokenURI)),
-                httpUploadProgressCallback: (event) => {
-                    console.log(Math.round(event.loaded / event.total * 100) + '% done');
-                }
-            })
-        } catch (e) {
-            console.log("err while uploading metadata", e)
-            setLoading(false)
-        }
+        const bufferData = Buffer.from(buffer); // Replace with your actual buffer data
+        const blob = new Blob([bufferData]);
+        const cid = await client.storeBlob(blob);
+        const imageUrl = `https://ipfs.io/ipfs/${cid}`;
+        const metadataCid = await client.storeDirectory([
+            new File(
+              [
+                JSON.stringify({
+                  name: name,
+                  description: description,
+                  assetType: "image",
+                  image: imageUrl,
+                }),
+              ],
+              'metadata.json'
+            ),
+        ]);
+        const metadataUrl = `https://ipfs.io/ipfs/${metadataCid}/metadata.json`;
         try {
             const dataToDatabase = {
                 description: description,
-                image: uploadedFile.publicUrl,
-                metadataUrl: added.publicUrl,
+                image: imageUrl,
+                metadataUrl: metadataUrl,
                 name: name,
                 owner: account,
                 platform: erc721,
                 network: chainId,
                 isERC721: true,
             }
-            const tokenURIJson = added.publicUrl
+            const tokenURIJson = metadataUrl
             setModalContent("mint")
             const signer = library.getSigner()
             const BidifyMinter = new ethers.Contract(addresses[chainId], ABI, signer)
@@ -528,7 +496,7 @@ export const Home = () => {
                     return Number(ethers.utils.hexValue(hex))
                 })
             }
-
+            console.log(tokenIds)
             if (forSale) {
                 setModalContent("list");
 
@@ -806,7 +774,7 @@ export const Home = () => {
                         {chainId !== undefined && 
                         <label className="block mt-3 text-sm font-medium text-center text-gray-900 sm:hidden dark:text-gray-300">
                             You don't have any {getSymbol(chainId)}? 
-                            <a className="text-[#e48b24]" href="#" rel="noopener noreferrer" onClick={() => window.open(process.env.REACT_APP_TRANSACK_URL, 'Buy Token', 'width=800,height=600,popup')} >Buy Crypto</a>
+                            <button className="text-[#e48b24]" onClick={() => window.open(process.env.REACT_APP_TRANSACK_URL, 'Buy Token', 'width=800,height=600,popup')} >Buy Crypto</button>
                         </label>}
                         <button type="submit" className={`flex sm:hidden items-center justify-center self-center w-3/4 mt-4 text-white focus:ring-4 focus:ring-[#f7b541] font-medium rounded-lg text-sm px-12 py-2.5 text-center dark:bg-[#f7a531] dark:hover:bg-[#f7b541] dark:focus:ring-[#f7b541] ${agree && !loading ? 'bg-[#e48b24] hover:bg-[#f7a531]' : 'pointer-events-none bg-gray-500'}`} onClick={onSubmit} >
                             {loading && <svg role="status" className="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -938,7 +906,7 @@ export const Home = () => {
                         </div>
                         {chainId !== undefined && 
                         <label className="hidden mt-3 text-sm font-medium text-center text-gray-900 sm:block dark:text-gray-300">
-                            You don't have any {getSymbol(chainId)}? <a className="text-[#e48b24]" href="#" rel="noopener noreferrer" onClick={() => window.open(process.env.REACT_APP_TRANSACK_URL, 'Buy Token', 'width=800,height=600')} >Buy Crypto</a>
+                            You don't have any {getSymbol(chainId)}? <button className="text-[#e48b24]" href="#" rel="noopener noreferrer" onClick={() => window.open(process.env.REACT_APP_TRANSACK_URL, 'Buy Token', 'width=800,height=600')} >Buy Crypto</button>
                         </label>}
                         <button type="submit" className={`hidden sm:flex items-center justify-center self-center w-3/4 mt-2 text-white  focus:ring-4 focus:ring-[#f7b541] font-medium rounded-lg text-sm px-12 py-2.5 text-center dark:bg-[#f7a531] dark:hover:bg-[#f7b541] dark:focus:ring-[#f7b541] ${agree && !loading ? 'bg-[#e48b24] hover:bg-[#f7a531]' : 'pointer-events-none bg-gray-500'}`} onClick={onSubmit}>
                             {loading && <svg role="status" className="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
