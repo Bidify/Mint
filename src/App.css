@@ -45,3 +45,18 @@
   -webkit-user-select: none;
   -ms-user-select: none;
 }
+
+/* For WebKit-based browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+
+::-webkit-scrollbar-track {
+  background-color: #bac3d6;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #392610;
+  border-radius: 4px;
+}

@@ -1,6 +1,6 @@
 // Set of helper functions to facilitate wallet setup
 import { ethers } from "ethers";
-import { NETWORKS } from "./constants";
+import { NETWORKS } from "./constants/config";
 
 /**
  * Prompt the user to add BSC as a network on Metamask, or switch to BSC if the wallet is on a different network

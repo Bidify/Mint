@@ -5,6 +5,7 @@
   "dependencies": {
     "@ethersproject/providers": "^5.5.3",
     "@fleekhq/fleek-storage-js": "^1.0.22",
+    "@rainbow-me/rainbowkit": "^1.3.4",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
@@ -38,7 +39,10 @@
     "react-scripts": "^5.0.0",
     "stream-browserify": "^3.0.0",
     "swr": "1.0.0-beta.8",
+    "typescript": "^5.3.3",
     "use-nft": "^0.9.0",
+    "viem": "^1.21.4",
+    "wagmi": "^1.4.13",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

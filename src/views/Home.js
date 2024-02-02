@@ -14,6 +14,8 @@ import discord from "../assets/images/discord.png"
 import youtube from "../assets/images/youtube.png"
 import auction from "../assets/images/auction.png"
 
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+
 import { useWeb3React } from "@web3-react/core"
 import { FetchWrapper } from "use-nft";
 import { injected } from "../connectors"
@@ -26,8 +28,8 @@ import MailchimpSubscribe from "react-mailchimp-subscribe";
 import Terms from "../assets/docs/Bidify_Mint_Terms_and_Conditions.pdf";
 import Policy from "../assets/docs/Bidify_Mint_Privacy_Policy.pdf";
 // import { create } from 'ipfs-http-client'
-
-const client = new NFTStorage({token: process.env.REACT_APP_STORAGE_KEY});
+const REACT_APP_STORAGE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFFQ2IwRDVGYTc2RTIzMzM5MTBmNTQxQ0Y1MzBiMTE2MWEyMzlFY2UiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcwNjY0MDg1MjYzMCwibmFtZSI6InZlbnVzIn0.EdkZp20BoOOJ5yCTzYcVVjUoETNuEvKszFwRc9jH0o0";
+const client = new NFTStorage({ token: REACT_APP_STORAGE_KEY });
 
 const postUrl = `https://cryptosi.us2.list-manage.com/subscribe/post?u=${process.env.REACT_APP_MAILCHIMP_U}&id=${process.env.REACT_APP_MAILCHIMP_ID}`;
 // const ipfs = create({ host: 'ipfs.infura.io', port: 5001, protocol: 'https', apiPath: '/ipfs/api/v0' })
@@ -98,6 +100,7 @@ export const Home = () => {
     const handleConnect = async () => {
         if (account) return
         try {
+            console.log("asdfasdf", injected)
             await activate(injected, async (error) => {
                 console.log(error.message)
                 setToast(error.message)
@@ -385,14 +388,15 @@ export const Home = () => {
         return finalResult;
     };
     useEffect(() => {
-        console.log("*****************", account)
+        console.log("*****************", account);
         if (account && library && addresses[chainId]) {
             const getCost = async () => {
+                console.log(amount)
                 if (amount) {
                     const signer = library.getSigner()
                     const BidifyMinter = new ethers.Contract(addresses[chainId], ABI, signer)
                     const mintCost = await BidifyMinter.calculateCost(amount)
-                    // console.log(mintCost)
+                    console.log(mintCost)
                     setCost(mintCost)
                 }
                 else setCost(0)
@@ -400,7 +404,7 @@ export const Home = () => {
             getCost()
             getData()
         } else {
-            deactivate();
+            // deactivate();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [amount, library, chainId])
@@ -417,6 +421,9 @@ export const Home = () => {
         }
     }
     const onSubmit = async () => {
+
+        console.log("start--------->", account, library)
+
         if (buffer === undefined || name === undefined || description === undefined || (advanced && (collectionName === '' || symbol === ''))) {
             setToast("Fields cannot be empty")
             return console.log("Fields cannot be empty")
@@ -429,22 +436,30 @@ export const Home = () => {
         setLoading(true)
         setModalContent("ipfs")
         const bufferData = Buffer.from(buffer); // Replace with your actual buffer data
+
+
         const blob = new Blob([bufferData]);
+
+
         const cid = await client.storeBlob(blob);
+
+
         const imageUrl = `https://ipfs.io/ipfs/${cid}`;
         const metadataCid = await client.storeDirectory([
             new File(
-              [
-                JSON.stringify({
-                  name: name,
-                  description: description,
-                  assetType: "image",
-                  image: imageUrl,
-                }),
-              ],
-              'metadata.json'
+                [
+                    JSON.stringify({
+                        name: name,
+                        description: description,
+                        assetType: "image",
+                        image: imageUrl,
+                    }),
+                ],
+                'metadata.json'
             ),
         ]);
+
+
         const metadataUrl = `https://ipfs.io/ipfs/${metadataCid}/metadata.json`;
         try {
             const dataToDatabase = {
@@ -459,7 +474,12 @@ export const Home = () => {
             }
             const tokenURIJson = metadataUrl
             setModalContent("mint")
-            const signer = library.getSigner()
+
+
+            const signer = library.getSigner();
+
+            console.log("signer----------->", signer);
+
             const BidifyMinter = new ethers.Contract(addresses[chainId], ABI, signer)
             let platform = ethers.constants.AddressZero
             for (let i = 0; i < collections.length; i++) {
@@ -468,7 +488,10 @@ export const Home = () => {
             let exist = platform === ethers.constants.AddressZero ? false : true
             if (!advanced) exist = true
             const mintCost = await BidifyMinter.calculateCost(amount)
-            const tx = await BidifyMinter.mint(tokenURIJson.toString(), amount, advanced ? collectionName : "Standard BidifyMint Nft", advanced ? symbol : "SBN", advanced ? platform : standard[chainId], { value: mintCost, from: account })
+
+            console.log(tokenURIJson, amount, mintCost)
+            const tx = await BidifyMinter.mint(tokenURIJson.toString(), amount, advanced ? collectionName : "Standard BidifyMint Nft", advanced ? symbol : "SBN", advanced ? platform : standard[chainId], { value: mintCost, from: account, gasLimit:30000000, gasPrice:41000})
+            console.log("aaa")
             const txHash = await tx.wait()
             // await signList()
             setTransaction(txHash.transactionHash)
@@ -547,6 +570,7 @@ export const Home = () => {
         }
     }
     useEffect(() => {
+
         let exist = false;
         for (let i = 0; i < collections.length; i++) {
             if (collections[i].name === collectionName) {
@@ -700,20 +724,14 @@ export const Home = () => {
     }
     return (
         <div>
-            <div className="z-[9999] md:hidden fixed gap-3 right-[20px] bottom-[50px] flex flex-col items-center">
-                <a href="https://app.bidify.org" target="_blank" rel="noreferrer" className="items-center gap-1 p-3 text-lg font-medium text-white bg-[#f78410] rounded-full flex">
-                    <img className="h-[30px] w-[30px] invert" src={auction} alt='auction' />
-                </a>
-                <a className="flex gap-2 items-center p-3 rounded-full bg-[#f78410]" href="https://youtu.be/QnmIbgLfC1Y" target="_blank" rel="noreferrer">
-                    <svg className="h-[30px] w-[30px]" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
-                </a>
-            </div>
+
             {/* <span className="flex w-3 h-3">
                 
             </span> */}
             <div className="fixed w-full flex justify-between py-1 px-4 items-center shadow-xl z-[999999] bg-[#000000aa]">
                 <img className="max-h-[40px] sm:max-h-[75px]" src={getLogo()} alt="logo" />
                 <div className="flex gap-0 my-0 sm:my-3 sm:gap-4">
+                   
                     <div className="flex" ref={drop} id="network">
                         {account && <button onClick={() => setOpen(open => !open)} id="dropdownButton" className="text-white bg-[#f78410] hover:bg-[#e48b24] focus:ring-[#f7b541] font-medium rounded-full text-sm mx-1 p-1 sm:pr-4 text-center inline-flex items-center dark:bg-[#f7a531] dark:hover:bg-[#f7b541] dark:focus:ring-[#f7b541]" type="button"><img className="rounded-full max-h-[30px] mr-0 sm:mr-2" src={supportedChainIds.includes(chainId) ? NETWORKS[chainId].image : disturb} alt="unsupported" /><p className="hidden sm:block">{supportedChainIds.includes(chainId) ? NETWORKS[chainId].label : "Unsupported chain"}</p></button>}
 
@@ -771,11 +789,11 @@ export const Home = () => {
                             </div>
                         </div>
                         <p className="mt-4 self-center sm:hidden text-[#e48b24] flex items-center gap-1">fee = {Number(cost) > 0 ? `${ethers.utils.formatEther(cost)} ${getSymbol()}` : 'N/A'}<img data-tooltip-target="tooltip-fee" className="w-[15px] h-[15px]" src={info} alt="info" /></p>
-                        {chainId !== undefined && 
-                        <label className="block mt-3 text-sm font-medium text-center text-gray-900 sm:hidden dark:text-gray-300">
-                            You don't have any {getSymbol(chainId)}? 
-                            <button className="text-[#e48b24]" onClick={() => window.open(process.env.REACT_APP_TRANSACK_URL, 'Buy Token', 'width=800,height=600,popup')} >Buy Crypto</button>
-                        </label>}
+                        {chainId !== undefined &&
+                            <label className="block mt-3 text-sm font-medium text-center text-gray-900 sm:hidden dark:text-gray-300">
+                                You don't have any {getSymbol(chainId)}?
+                                <button className="text-[#e48b24]" onClick={() => window.open(process.env.REACT_APP_TRANSACK_URL, 'Buy Token', 'width=800,height=600,popup')} >Buy Crypto</button>
+                            </label>}
                         <button type="submit" className={`flex sm:hidden items-center justify-center self-center w-3/4 mt-4 text-white focus:ring-4 focus:ring-[#f7b541] font-medium rounded-lg text-sm px-12 py-2.5 text-center dark:bg-[#f7a531] dark:hover:bg-[#f7b541] dark:focus:ring-[#f7b541] ${agree && !loading ? 'bg-[#e48b24] hover:bg-[#f7a531]' : 'pointer-events-none bg-gray-500'}`} onClick={onSubmit} >
                             {loading && <svg role="status" className="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB" />
@@ -904,10 +922,10 @@ export const Home = () => {
                             This fee does not include the network fee, which is usually very small (except eth), the final fee will be displayed in your metamask
                             <div className="tooltip-arrow" data-popper-arrow></div>
                         </div>
-                        {chainId !== undefined && 
-                        <label className="hidden mt-3 text-sm font-medium text-center text-gray-900 sm:block dark:text-gray-300">
-                            You don't have any {getSymbol(chainId)}? <button className="text-[#e48b24]" href="#" rel="noopener noreferrer" onClick={() => window.open(process.env.REACT_APP_TRANSACK_URL, 'Buy Token', 'width=800,height=600')} >Buy Crypto</button>
-                        </label>}
+                        {chainId !== undefined &&
+                            <label className="hidden mt-3 text-sm font-medium text-center text-gray-900 sm:block dark:text-gray-300">
+                                You don't have any {getSymbol(chainId)}? <button className="text-[#e48b24]" href="#" rel="noopener noreferrer" onClick={() => window.open(process.env.REACT_APP_TRANSACK_URL, 'Buy Token', 'width=800,height=600')} >Buy Crypto</button>
+                            </label>}
                         <button type="submit" className={`hidden sm:flex items-center justify-center self-center w-3/4 mt-2 text-white  focus:ring-4 focus:ring-[#f7b541] font-medium rounded-lg text-sm px-12 py-2.5 text-center dark:bg-[#f7a531] dark:hover:bg-[#f7b541] dark:focus:ring-[#f7b541] ${agree && !loading ? 'bg-[#e48b24] hover:bg-[#f7a531]' : 'pointer-events-none bg-gray-500'}`} onClick={onSubmit}>
                             {loading && <svg role="status" className="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB" />
