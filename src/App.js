@@ -53,7 +53,7 @@ const { chains, publicClient } = configureChains(
   ]
 );
 const projectId =
-  process.env.REACT_APP_PROJECT_ID || "e89228fed40d4c6e9520912214dfd68b";
+  process.env.REACT_APP_PROJECT_ID || "mint.bidify.cloud's Project id";
 
 const connectors = connectorsForWallets([
   {
