@@ -8,7 +8,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import { useAnalytics } from "./utils/GoogleAnalytics";
 import { Wrapper } from "./components/Wrapper";
 
-//rainbowkit
+//rainbowkit @used by dew
 import "@rainbow-me/rainbowkit/styles.css";
 
 import {
@@ -57,7 +57,7 @@ const projectId =
 
 const connectors = connectorsForWallets([
   {
-    groupName: "bidify.org",
+    groupName: "mint.bidify.org",
     wallets: [
       metaMaskWallet({ projectId, chains, shimDisconnect: true }),
       phantomWallet({ chains }),
@@ -80,17 +80,15 @@ function getLibrary(provider) {
   return new Web3Provider(provider);
 }
 
-function App() {
+function App() { //@ modified by dew
   const { initialized } = useAnalytics();
   return (
-    // <div>
-    <WagmiConfig config={wagmiConfig}>
+    <WagmiConfig config={wagmiConfig}> 
       <RainbowKitProvider chains={chains}>
         <ActiveWeb3Provider>
           <BrowserRouter>
             <Wrapper initialized={initialized} />
             <Routes>
-              {/* { GA.init() && <GA.RouteTracker /> } */}
               <Route path="/" element={<Home />} />
             </Routes>
           </BrowserRouter>

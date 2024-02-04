@@ -54,7 +54,7 @@ const modalContents = {
 const Home = () => {
   // const { account, library, activate, deactivate } = useWeb3React();
 
-  const { address, isConnected, isConnecting, isReconnecting, connector, chainId, signer } = useWeb3()
+  const { address, isConnected, isConnecting, isReconnecting, connector, chainId, signer } = useWeb3();// hook address, isconnected, inConnecting.. @dew
 
   const [buffer, setBuffer] = useState();
   const [name, setName] = useState("");
@@ -195,7 +195,7 @@ const Home = () => {
     const BidifyToken = new ethers.Contract(
       address,
       ERC721_ABI,
-      // library.getSigner()
+      // library.getSigner() @modified by dew
       signer,
     );
     const allowed = await BidifyToken.isApprovedForAll(
@@ -210,7 +210,7 @@ const Home = () => {
       const BidifyToken = new ethers.Contract(
         erc721,
         ERC721_ABI,
-        // library.getSigner()
+        // library.getSigner() @modified by dew
         signer,
       );
       const tx = await BidifyToken.setApprovalForAll(
@@ -243,7 +243,7 @@ const Home = () => {
     const Bidify = new ethers.Contract(
       BIDIFY.address[chainId],
       BIDIFY.abi,
-      // library.getSigner()
+      // library.getSigner() @modified by dew
       signer,
     );
     try {
@@ -280,7 +280,7 @@ const Home = () => {
     const bidify = new ethers.Contract(
       BIDIFY.address[chainId],
       BIDIFY.abi,
-      // library.getSigner()
+      // library.getSigner() // @modified by dew
       signer
     );
     const raw = await bidify.getListing(id.toString());
@@ -307,15 +307,7 @@ const Home = () => {
     let marketplace = nullIfZeroAddress(raw.marketplace);
 
     let bids = [];
-    // const topic1 = "0x" + id.toString(16).padStart(64, "0");
-    // const ret = await axios.get(`${getLogUrl[chainId]}&fromBlock=0&${chainId === 9001 || chainId === 100 ? 'toBlock=latest&' : ''}topic0=0xdbf5dea084c6b3ed344cc0976b2643f2c9a3400350e04162ea3f7302c16ee914&topic0_1_opr=and&topic1=${chainId === 9001 || chainId === 100 ? topic1.toLowerCase() : topic1}&apikey=${snowApi[chainId]}`)
-    // const logs = ret.data.result
-    // for (let bid of logs) {
-    //     bids.push({
-    //         bidder: "0x" + bid.topics[2].substr(-40),
-    //         price: ethers.utils.formatEther(ethers.BigNumber.from(bid.data)),
-    //     });
-    // }
+
     return {
       id,
       creator: raw.creator,
@@ -407,10 +399,6 @@ const Home = () => {
       }
     }
 
-    // function jsonurl(url) {
-    //   return `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-    // }
-
     const fetchWrapper = new FetchWrapper(fetcher, {
       jsonProxy: (url) => {
         return `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
@@ -439,7 +427,7 @@ const Home = () => {
       const getCost = async () => {
         // console.log(amount)
         if (amount) {
-          // const signer = library.getSigner();
+          // const signer = library.getSigner(); // @modified by dew
           const BidifyMinter = new ethers.Contract(
             addresses[chainId],
             ABI,
@@ -453,13 +441,14 @@ const Home = () => {
       getCost();
       getData();
     } else {
-      // deactivate();
+      // deactivate(); //@ modified by dew...
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount, address, chainId, signer]);
 
   const getData = async () => {
-    // const signer = library.getSigner();
+    // @modified by dew
+    // const signer = library.getSigner(); 
     // const signer = address;
     try {
       const BidifyMinter = new ethers.Contract(addresses[chainId], ABI, signer);
@@ -523,11 +512,6 @@ const Home = () => {
       };
       const tokenURIJson = metadataUrl;
       setModalContent("mint");
-
-      // const signer = library.getSigner();
-      // const signer = address;
-
-      // console.log("signer----------->", signer);
 
       const BidifyMinter = new ethers.Contract(addresses[chainId], ABI, signer);
       let platform = ethers.constants.AddressZero;
