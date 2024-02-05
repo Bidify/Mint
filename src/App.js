@@ -8,15 +8,16 @@ import { Web3Provider } from "@ethersproject/providers";
 import { useAnalytics } from "./utils/GoogleAnalytics";
 import { Wrapper } from "./components/Wrapper";
 
-
 //rainbowkit @used by dew
 import "@rainbow-me/rainbowkit/styles.css";
-
 import {
   RainbowKitProvider,
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
+import { alchemyProvider } from "wagmi/providers/alchemy";
+import { publicProvider } from "wagmi/providers/public";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
+
 import {
   polygon,
   avalanche,
@@ -31,9 +32,6 @@ import {
   sepolia,
 } from "wagmi/chains";
 
-
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { publicProvider } from "wagmi/providers/public";
 
 import {
   metaMaskWallet,
