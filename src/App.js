@@ -8,29 +8,29 @@ import { Web3Provider } from "@ethersproject/providers";
 import { useAnalytics } from "./utils/GoogleAnalytics";
 import { Wrapper } from "./components/Wrapper";
 
+
 //rainbowkit @used by dew
 import "@rainbow-me/rainbowkit/styles.css";
 
 import {
-  getDefaultWallets,
   RainbowKitProvider,
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import {
-  mainnet,
   polygon,
-  // opBNB,
-  // avax,
-  // etc,
-  // op,
-  // arb,
+  avalanche,
+  bsc,
+  classic,
+  optimism,
+  arbitrum,
   mantle,
   base,
   scroll,
   goerli,
   sepolia,
 } from "wagmi/chains";
+
 
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
@@ -45,8 +45,31 @@ import {
   okxWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
+const defaultChains = [
+  polygon,
+  bsc,
+  avalanche,
+  {
+    ...classic,
+    iconUrl: '/chain_logos/etc.svg',
+  },
+  classic,
+  optimism,
+  arbitrum,
+  {
+    ...mantle,
+    iconUrl: "/chain_logos/mantle.avif"
+  },
+  base,
+  {
+    ...scroll,
+    iconUrl: '/chain_logos/scroll.svg'
+  },
+  // goerli,
+  sepolia,
+];
 const { chains, publicClient } = configureChains(
-  [mainnet, polygon, mantle, base, scroll, goerli, sepolia],
+  defaultChains,
   [
     alchemyProvider({ apiKey: "2XseyLBOGKS5JJaYdROTvi-ZgP9UcGYC" }),
     publicProvider(),
