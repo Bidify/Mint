@@ -14,8 +14,10 @@ import {
   RainbowKitProvider,
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
-import { alchemyProvider } from "wagmi/providers/alchemy";
+
+
 import { publicProvider } from "wagmi/providers/public";
+
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 
 import {
@@ -69,7 +71,7 @@ const defaultChains = [
 const { chains, publicClient } = configureChains(
   defaultChains,
   [
-    alchemyProvider({ apiKey: "2XseyLBOGKS5JJaYdROTvi-ZgP9UcGYC" }),
+    // infuraProvider({ apiKey: "07556fc9491e4dbb9c75160d21174a79" }),
     publicProvider(),
   ]
 );

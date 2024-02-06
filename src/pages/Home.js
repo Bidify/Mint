@@ -13,8 +13,9 @@ import instagram from "../assets/images/instagram.png";
 import discord from "../assets/images/discord.png";
 import youtube from "../assets/images/youtube.png";
 import auction from "../assets/images/auction.png";
-
+import { uploadToPinata } from "../utils/pinata";
 import { FetchWrapper } from "use-nft";
+import VerticalLinearStepper from "../components/Stepper";
 // import { switchNetwork } from "../wallet"
 import useWeb3 from "../hooks/useWeb3";
 
@@ -26,6 +27,7 @@ import {
   snowApi,
   baseUrl,
   standard,
+  PINATA_KEY,
 } from "../constants/config";
 import { ABI, BIDIFY, ERC721_ABI } from "../constants/abis";
 
@@ -37,18 +39,11 @@ import Terms from "../assets/docs/Bidify_Mint_Terms_and_Conditions.pdf";
 import Policy from "../assets/docs/Bidify_Mint_Privacy_Policy.pdf";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 // import { create } from 'ipfs-http-client'
-const REACT_APP_STORAGE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFFQ2IwRDVGYTc2RTIzMzM5MTBmNTQxQ0Y1MzBiMTE2MWEyMzlFY2UiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTcwNjY0MDg1MjYzMCwibmFtZSI6InZlbnVzIn0.EdkZp20BoOOJ5yCTzYcVVjUoETNuEvKszFwRc9jH0o0";
-const client = new NFTStorage({ token: REACT_APP_STORAGE_KEY });
+const client = new NFTStorage({ token: PINATA_KEY });
 
 const postUrl = `https://cryptosi.us2.list-manage.com/subscribe/post?u=${process.env.REACT_APP_MAILCHIMP_U}&id=${process.env.REACT_APP_MAILCHIMP_ID}`;
 // const ipfs = create({ host: 'ipfs.infura.io', port: 5001, protocol: 'https', apiPath: '/ipfs/api/v0' })
-const modalContents = {
-  ipfs: "Uploading data to the IPFS...",
-  mint: "Minting NFTs...",
-  database: "Adding to database...",
-  list: "Creating Auctions... \nThis will take a few minutes and you should to confirm transactions several times.",
-};
+
 // const transackLogo = "https://www.gitbook.com/cdn-cgi/image/width=40,height=40,fit=contain,dpr=1.25,format=auto/https%3A%2F%2F2568214732-files.gitbook.io%2F~%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FyKT7ulakWzij4PDiIp6U%252Ficon%252FTbk5OkyEAiidHiC1yXpm%252FsK_Kgoxa_400x400.jpeg%3Falt%3Dmedia%26token%3Dacdf28e9-2036-4d48-93ce-dbd0eb6f5714"
 
 const Home = () => {
@@ -65,7 +60,7 @@ const Home = () => {
   const [endingPrice, setEndingPrice] = useState(0);
   const [duration, setDuration] = useState(0);
   const [type, setType] = useState();
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [approving, setApproving] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [transaction, setTransaction] = useState("");
@@ -81,12 +76,16 @@ const Home = () => {
   const [advanced, setAdvanced] = useState(false);
   const [expand, setExpand] = useState(false);
   const [agree, setAgree] = useState(false);
+
+  const [activeStep, setActiveStep] = React.useState(0);
+  const [rate, setRate] = React.useState(0);
   // const [email, setEmail] = useState("")
 
   const [open, setOpen] = useState(false);
   const [openCollection, setOpenCollection] = useState(false);
   const drop = useRef("network");
   const collection = useRef("collection");
+
 
   const handleClick = (e) => {
     if (!collection.current) return;
@@ -226,6 +225,12 @@ const Home = () => {
       console.log(e.message);
     }
   };
+  /**
+   * upload data to /bidify.org
+   * @param {*} data 
+   * @param {*} forSale 
+   * @dew1204
+   */
   const addToDatabase = async (data, forSale) => {
     try {
       if (forSale) {
@@ -243,8 +248,7 @@ const Home = () => {
     const Bidify = new ethers.Contract(
       BIDIFY.address[chainId],
       BIDIFY.abi,
-      // library.getSigner() @modified by dew
-      signer,
+      signer, //@dew1204
     );
     try {
       const tx = await Bidify.list(
@@ -419,87 +423,131 @@ const Home = () => {
     };
     return finalResult;
   };
+  /**
+   * get Mint const with account
+   * @dew1204
+   */
+  const getCost = async () => {
+    // console.log(amount)
+    if (amount) {
+      const BidifyMinter = new ethers.Contract(
+        addresses[chainId],
+        ABI,
+        signer
+      );
+      const mintCost = await BidifyMinter.calculateCost(amount).catch(err => { throw err });
+      // console.log(mintCost)
+      setCost(mintCost);
+    } else setCost(0);
+  };
+  /**
+   * get Collections with account
+   * @dew1204
+   */
+  const getData = async () => {
+    // @modified by dew
+    const BidifyMinter = new ethers.Contract(addresses[chainId], ABI, signer);
+    const collections = await BidifyMinter.getCollections().catch(err => { throw err });
+    console.log("collections ------------->", collections);
+    setCollections(collections);
+  };
+
   useEffect(() => {
-    console.log("*****************", address, chainId, {
-      factory: addresses[chainId],
-    });
-    if (address && addresses[chainId] && signer) {
-      const getCost = async () => {
-        // console.log(amount)
-        if (amount) {
-          // const signer = library.getSigner(); // @modified by dew
-          const BidifyMinter = new ethers.Contract(
-            addresses[chainId],
-            ABI,
-            signer
-          );
-          const mintCost = await BidifyMinter.calculateCost(amount);
-          // console.log(mintCost)
-          setCost(mintCost);
-        } else setCost(0);
-      };
-      getCost();
-      getData();
-    } else {
-      // deactivate(); //@ modified by dew...
+    console.log("current data ------------>", { address, chainId, factory: addresses[chainId] });
+    try {
+      if (address && addresses[chainId] && signer) {
+        // getCost();
+        // getData();
+      } 
+    } catch (err) {
+      console.log("current err ---------------->", err);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount, address, chainId, signer]);
 
-  const getData = async () => {
-    // @modified by dew
-    // const signer = library.getSigner(); 
-    // const signer = address;
-    try {
-      const BidifyMinter = new ethers.Contract(addresses[chainId], ABI, signer);
-      const collections = await BidifyMinter.getCollections();
-      setCollections(collections);
-    } catch (e) {
-      setToast(e.message);
-      console.log(e);
+  /**
+   * validate if all input fields are valid
+   * @dew1204
+   */
+  const filterFormFields = () => {
+    if (!buffer) {
+      throw "Upload data for minting NFT";
+    } else if (!name) {
+      throw "Input name for NFT";
+    } else if (!description) {
+      throw "Input description for NFT";
+    } else if (advanced && !collectionName) {
+      throw "Input collection Name";
+    } else if (advanced && !symbol) {
+      throw "Input symbol";
+    } else if (amount < 1) {
+      throw "invalid amount";
     }
-  };
+  }
+
   const onSubmit = async () => {
-    console.log("onSubmit-------------->", { address: address, chainId: chainId, signer: signer });
-    if (
-      buffer === undefined ||
-      name === undefined ||
-      description === undefined ||
-      (advanced && (collectionName === "" || symbol === ""))
-    ) {
-      setToast("Fields cannot be empty");
-      return console.log("Fields cannot be empty");
-    }
-    if (amount < 1) {
-      setToast("Invalid amount");
-      return console.log("Invalid amount");
-    }
 
-    setLoading(true);
-    setModalContent("ipfs");
-    const bufferData = Buffer.from(buffer); // Replace with your actual buffer data
+    console.log("@dew1204/onSubmit-------------->", { address: address, chainId: chainId, signer: signer, factory: addresses[chainId] });
 
-    const blob = new Blob([bufferData]);
-
-    const cid = await client.storeBlob(blob);
-
-    const imageUrl = `https://ipfs.io/ipfs/${cid}`;
-    const metadataCid = await client.storeDirectory([
-      new File(
-        [
-          JSON.stringify({
-            name: name,
-            description: description,
-            assetType: "image",
-            image: imageUrl,
-          }),
-        ],
-        "metadata.json"
-      ),
-    ]);
-
-    const metadataUrl = `https://ipfs.io/ipfs/${metadataCid}/metadata.json`;
     try {
+
+      if (!isConnected) {
+        throw "Connect wallet before start.";
+      }
+      
+      filterFormFields (); //filters all fields are valid
+
+      setIsLoading(true);
+
+      setActiveStep(0);
+      setRate(0);
+
+      const bufferData = Buffer.from(buffer); // Replace with your actual buffer data
+      const blob = new Blob([bufferData]);
+
+      const _data = await uploadToPinata(
+        blob,
+        ({loaded, total}) => { 
+          setRate(Math.floor(loaded * 100 / total))
+        }
+      ).catch(err => {
+        console.log(err);
+        throw "File upload failed to IPFS. Please retry.";
+      });
+      
+      setActiveStep(1);
+      setRate(0);
+
+      const imageUrl = `https://ipfs.io/ipfs/${_data.IpfsHash}`; //https://ipfs.io/ipfs/${cid} @dew1204
+      console.log({imageUrl})
+
+      const _metaData = await uploadToPinata(
+        new File(
+          [
+            JSON.stringify({
+              name: name,
+              description: description,
+              assetType: "image",
+              image: imageUrl,
+            })
+          ], "metadata.json"
+        ),
+        ({loaded, total}) => { 
+          setRate(Math.floor(loaded * 100 / total))
+        }
+      ).catch(err => {
+        console.log(err);
+        throw "Metadata upload failed to IPFS. Please retry.";
+      });
+      
+      setActiveStep(2);
+      setRate(0);
+      
+      const metadataUrl = `https://ipfs.io/ipfs/${_metaData.IpfsHash}`;
+      // const metadataUrl = `https://ipfs.io/ipfs/${_metaData.IpfsHash}/metadata.json`;
+      console.log({metadataUrl});
+
+    
       const dataToDatabase = {
         description: description,
         image: imageUrl,
@@ -511,7 +559,6 @@ const Home = () => {
         isERC721: true,
       };
       const tokenURIJson = metadataUrl;
-      setModalContent("mint");
 
       const BidifyMinter = new ethers.Contract(addresses[chainId], ABI, signer);
       let platform = ethers.constants.AddressZero;
@@ -521,9 +568,12 @@ const Home = () => {
       }
       let exist = platform === ethers.constants.AddressZero ? false : true;
       if (!advanced) exist = true;
-      const mintCost = await BidifyMinter.calculateCost(amount);
+      const mintCost = await BidifyMinter.calculateCost(amount).catch(err => {
+        console.log(err);
+        throw "Mint cost calculation failed.";
+      });
 
-      console.log(tokenURIJson, amount, mintCost);
+      console.log({ tokenURIJson, amount, mintCost });
 
       console.log("------------", {
         uri: tokenURIJson.toString(),
@@ -546,9 +596,15 @@ const Home = () => {
         advanced ? symbol : "SBN",
         advanced ? platform : standard[chainId],
         { value: mintCost, from: address, gasLimit: 3000000, gasPrice: 3000000 }
-      );
+      ).catch(err => {
+        console.log(err);
+        throw "NFT mint failed.";
+      });
       // console.log("tx---------------->", tx);
-      const txHash = await tx.wait();
+      const txHash = await tx.wait().catch(err => {
+        console.log(err);
+        throw "Getting transaction failed.";
+      });
       // await signList()
       setTransaction(txHash.transactionHash);
       if (!exist) {
@@ -576,9 +632,10 @@ const Home = () => {
         });
       }
       // console.log(tokenIds)
-      if (forSale) {
-        setModalContent("list");
+      setActiveStep(3);
+      setRate(0);
 
+      if (forSale) {
         const totalCount = await getLogs();
         if (totalCount > 0) {
           const latestDetail = await getDetailFromId(
@@ -597,7 +654,10 @@ const Home = () => {
         ) {
           console.log("while loop: delaying");
         }
-        setModalContent("database");
+
+        setActiveStep(4);
+        setRate(0);
+
         const pData = [];
         try {
           for (let i = 0; i < tokenIds.length; i++) {
@@ -609,51 +669,77 @@ const Home = () => {
         }
         const data = await Promise.all(pData);
         console.log("data from chain", data);
-        await addToDatabase(data, forSale);
+        
+        //save data to db @dew1204
+        await axios.post(`${baseUrl}/admin`, data, {
+          onUploadProgress: ({loaded, total}) => { 
+            setRate(Math.floor(loaded * 100 / total))
+          }
+        }).catch(err => {
+          console.log(err);
+          throw "Database saving failed."
+        })
       } else {
-        setModalContent("database");
         const data = [];
         for (let i = 0; i < tokenIds.length; i++) {
           data.push({ ...dataToDatabase, token: tokenIds[i].toString() });
         }
-        await addToDatabase(data, forSale);
+
+        //await addToDatabase(data, forSale);
+        //save data to DB @dew1204
+        await axios.post(`${baseUrl}/adminCollection`, data, {
+          onUploadProgress: ({loaded, total}) => { 
+            setRate(Math.floor(loaded * 100 / total))
+          }
+        }).catch(err => {
+          console.log(err)
+          throw "Database saving failed."
+        });
       }
+
       setShowAlert(true);
-      setLoading(false);
       getData();
       if (type === "") {
         setType("none");
       }
     } catch (err) {
-      setToast(err.message);
+      if (err.message) {
+        setToast(err.message);
+      } else {
+        setToast(err);
+      }
       console.log("err", err);
-      setLoading(false);
+    } finally {
+      setIsLoading(false);
+      setActiveStep(0);
+      setRate(0);
     }
   };
-  useEffect(() => {
-    let exist = false;
-    for (let i = 0; i < collections.length; i++) {
-      if (collections[i].name === collectionName) {
-        exist = true;
-        setSymbol(collections[i].symbol);
-        if (chainId !== 10 || chainId !== 42161)
-          setErc721(collections[i].platform);
-        if (chainId !== 10 || chainId !== 42161)
-          checkAllowd(collections[i].platform);
-      }
-    }
-    if (exist) {
-      setSymbolEditable(false);
-      if (chainId === 10 || chainId === 42161) setForSale(false);
-    } else {
-      setSymbolEditable(true);
-      setSymbol("");
-      setErc721("");
-      setApproved(false);
-      setForSale(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [collectionName, chainId]);
+  // useEffect(() => {
+  //   let exist = false;
+  //   for (let i = 0; i < collections.length; i++) {
+  //     if (collections[i].name === collectionName) {
+  //       exist = true;
+  //       setSymbol(collections[i].symbol);
+  //       if (chainId !== 10 || chainId !== 42161)
+  //         setErc721(collections[i].platform);
+  //       if (chainId !== 10 || chainId !== 42161)
+  //         checkAllowd(collections[i].platform);
+  //     }
+  //   }
+  //   if (exist) {
+  //     setSymbolEditable(false);
+  //     if (chainId === 10 || chainId === 42161) setForSale(false);
+  //   } else {
+  //     setSymbolEditable(true);
+  //     setSymbol("");
+  //     setErc721("");
+  //     setApproved(false);
+  //     setForSale(false);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [collectionName, chainId]);
+  
   const handleSelectCollection = (item) => {
     setSymbolEditable(false);
     setOpenCollection(false);
@@ -723,7 +809,7 @@ const Home = () => {
       </form>
     );
   };
-  const renderModal = () => {
+  const _renderSucessModal = () => {
     return (
       <div className="overflow-y-auto overflow-x-hidden fixed w-full bg-[rgba(0,0,0,0.4)] h-[100vh] flex justify-center items-start top-0 right-0 left-0 z-[999999]">
         <div className="relative w-full h-auto max-w-4xl p-4 mx-2 sm:mt-8">
@@ -1092,13 +1178,13 @@ const Home = () => {
             <button
               type="submit"
               className={`flex sm:hidden items-center justify-center self-center w-3/4 mt-4 text-white focus:ring-4 focus:ring-[#f7b541] font-medium rounded-lg text-sm px-12 py-2.5 text-center dark:bg-[#f7a531] dark:hover:bg-[#f7b541] dark:focus:ring-[#f7b541] ${
-                agree && !loading
+                agree && !isLoading
                   ? "bg-[#e48b24] hover:bg-[#f7a531]"
                   : "pointer-events-none bg-gray-500"
               }`}
               onClick={onSubmit}
             >
-              {loading && (
+              {isLoading && (
                 <svg
                   role="status"
                   className="inline w-4 h-4 mr-3 text-white animate-spin"
@@ -1521,13 +1607,13 @@ const Home = () => {
             <button
               type="submit"
               className={`hidden sm:flex items-center justify-center self-center w-full mt-2 text-white  focus:ring-4 focus:ring-[#f7b541] font-medium rounded-lg text-sm px-12 py-2.5 text-center dark:bg-[#f7a531] dark:hover:bg-[#f7b541] dark:focus:ring-[#f7b541] ${
-                agree && !loading
+                agree && !isLoading
                   ? "bg-[#e48b24] hover:bg-[#f7a531]"
                   : "pointer-events-none bg-gray-500"
               }`}
               onClick={onSubmit}
             >
-              {loading && (
+              {isLoading && (
                 <svg
                   role="status"
                   className="inline w-4 h-4 mr-3 text-white animate-spin"
@@ -1548,38 +1634,7 @@ const Home = () => {
               {advanced ? "Mint Advanced NFT" : "Mint Standard NFT"}
             </button>
 
-            {loading && (
-              <div
-                className="overflow-y-auto overflow-x-hidden fixed right-0 left-0 top-0 z-50 justify-center items-center md:inset-0 w-full bg-[#0003] flex h-[100vh]"
-                id="popup-modal"
-              >
-                <div className="relative w-full h-auto max-w-md px-4">
-                  <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                    <div className="p-6 pt-16 pb-8 text-center">
-                      <svg
-                        role="status"
-                        className="inline w-10 h-10 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-                        viewBox="0 0 100 101"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                          fill="currentColor"
-                        />
-                        <path
-                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                          fill="currentFill"
-                        />
-                      </svg>
-                      <h3 className="mt-3 mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                        {modalContents[modalContent]}
-                      </h3>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            {isLoading && <VerticalLinearStepper activeStep={activeStep} forSale={forSale} rate={rate}/>}
           </div>
         </div>
       </div>
@@ -1634,7 +1689,7 @@ const Home = () => {
           </div>
         </div>
       )}
-      {showAlert && renderModal()}
+      {showAlert && _renderSucessModal()}
     </div>
   );
 };
