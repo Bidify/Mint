@@ -284,8 +284,7 @@ const Home = () => {
     const bidify = new ethers.Contract(
       BIDIFY.address[chainId],
       BIDIFY.abi,
-      // library.getSigner() // @modified by dew
-      signer
+      signer //@dew1204
     );
     const raw = await bidify.getListing(id.toString());
     const nullIfZeroAddress = (value) => {
@@ -462,7 +461,6 @@ const Home = () => {
     } catch (err) {
       console.log("current err ---------------->", err);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amount, address, chainId, signer]);
 
   /**
@@ -495,10 +493,9 @@ const Home = () => {
         throw "Connect wallet before start.";
       }
       
-      filterFormFields (); //filters all fields are valid
+      filterFormFields(); //filters all fields are valid
 
       setIsLoading(true);
-
       setActiveStep(0);
       setRate(0);
 
@@ -566,6 +563,7 @@ const Home = () => {
         if (collections[i].name === collectionName)
           platform = collections[i].platform;
       }
+      
       let exist = platform === ethers.constants.AddressZero ? false : true;
       if (!advanced) exist = true;
       const mintCost = await BidifyMinter.calculateCost(amount).catch(err => {
@@ -573,7 +571,7 @@ const Home = () => {
         throw "Mint cost calculation failed.";
       });
 
-      console.log({ tokenURIJson, amount, mintCost });
+      console.log("@dew1204 mint cost--------------->", { tokenURIJson, amount, mintCost });
 
       console.log("------------", {
         uri: tokenURIJson.toString(),
@@ -589,6 +587,16 @@ const Home = () => {
         },
       });
       // const tx = await BidifyMinter.mint(tokenURIJson.toString(), amount, advanced ? collectionName : "Standard BidifyMint Nft", advanced ? symbol : "SBN", advanced ? platform : standard[chainId], { value: mintCost, from: account, gasLimit:3000000, gasPrice:3000000})
+      console.log("@dew1204 ----------->", platform, advanced, advanced ? platform : standard[chainId]);
+      console.log("@dew1204mint-------->", {
+        uri:tokenURIJson.toString(),
+        amount,
+        collection: advanced ? collectionName : "Standard BidifyMint Nft",
+        symbol: advanced ? symbol : "SBN",
+        platform: advanced ? platform : standard[chainId],
+        etc: { value: mintCost, from: address, gasLimit: 3000000, gasPrice: 3000000 }
+      })
+      
       const tx = await BidifyMinter.mint(
         tokenURIJson.toString(),
         amount,
@@ -600,7 +608,7 @@ const Home = () => {
         console.log(err);
         throw "NFT mint failed.";
       });
-      // console.log("tx---------------->", tx);
+      console.log("tx---------------->", tx);
       const txHash = await tx.wait().catch(err => {
         console.log(err);
         throw "Getting transaction failed.";
@@ -626,8 +634,9 @@ const Home = () => {
           tokenIds.push(Number(ethers.utils.hexValue(hex)));
         }
       } else {
+        console.log("tx---------->event", txHash.events);
         tokenIds = txHash.events.map((event) => {
-          const hex = event.topics[3];
+          const hex = event.topics[0];
           return Number(ethers.utils.hexValue(hex));
         });
       }
@@ -673,7 +682,7 @@ const Home = () => {
         //save data to db @dew1204
         await axios.post(`${baseUrl}/admin`, data, {
           onUploadProgress: ({loaded, total}) => { 
-            setRate(Math.floor(loaded * 100 / total))
+            setRate(Math.floor(loaded * 100 / total));
           }
         }).catch(err => {
           console.log(err);

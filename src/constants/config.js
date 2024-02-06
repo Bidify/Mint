@@ -47,8 +47,9 @@ export const addresses = {
   [NetworkId.OPTIMISM]: "0x04Fe964916B24deb3C2D7E6A8d9873b054E52492", //verified
   [NetworkId.zkSyncTestnet]: "0x694DCbFBD60e8C4923B130570Ba55Ba237c4f12A",
   [NetworkId.zkSyncMainnet]: "0x694DCbFBD60e8C4923B130570Ba55Ba237c4f12A",
-  [NetworkId.GOERLI]: "0xc77Ef11a940015012d17340105D6AABFD7baF168",
 
+
+  [NetworkId.GOERLI]: "0xc9BE5EC3AAAafaaab3aD973Bc64596f11D8401A2",//verified
   [NetworkId.SEPOLIA]: "0x09994c7E1eD02E56d097BcCFD0Da47dFF0F66e99"//verified
 };
 export const standard = {
@@ -65,6 +66,9 @@ export const standard = {
   [NetworkId.OPTIMISM]: "0xC254F215840EB03Ef7ff7E2707CB5787d529579a",
   [NetworkId.zkSyncTestnet]: "0x464Efc76aedddAD363dAd78375873456C0a21BBc",
   [NetworkId.zkSyncMainnet]: "0x464Efc76aedddAD363dAd78375873456C0a21BBc",
+
+  [NetworkId.GOERLI]: "0x63A7dc874e5339E43a7868d07b1640012eCfe064",//verified
+  [NetworkId.SEPOLIA]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E"//verified
 }
 // export const platforms = {
 //   [NetworkId.POLYGON]: "0x175bc1bACF1fc054A5CA30AdeC155f00AaA2ce06",

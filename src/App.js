@@ -65,8 +65,8 @@ const defaultChains = [
     ...scroll,
     iconUrl: '/chain_logos/scroll.svg'
   },
-  // goerli,
   sepolia,
+  goerli
 ];
 const { chains, publicClient } = configureChains(
   defaultChains,
