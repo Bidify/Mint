@@ -77,6 +77,8 @@ const Home = () => {
   const [expand, setExpand] = useState(false);
   const [agree, setAgree] = useState(false);
 
+  const [bidifyMinter, setbidifyMinter] = useState(null);
+
   const [activeStep, setActiveStep] = React.useState(0);
   const [rate, setRate] = React.useState(0);
   // const [email, setEmail] = useState("")
@@ -426,42 +428,53 @@ const Home = () => {
    * get Mint const with account
    * @dew1204
    */
-  const getCost = async () => {
+  const getCost = async (_bidifyMinter = bidifyMinter) => {
     // console.log(amount)
-    if (amount) {
-      const BidifyMinter = new ethers.Contract(
-        addresses[chainId],
-        ABI,
-        signer
-      );
-      const mintCost = await BidifyMinter.calculateCost(amount).catch(err => { throw err });
-      // console.log(mintCost)
+    try {
+      if (!_bidifyMinter) {
+        throw "cannot read the bidifyMint contract";
+      } 
+      const mintCost = await _bidifyMinter.calculateCost(amount).catch(err => { 
+        setCost(0);
+        throw `err in contract.calculateCost call ${chainId}`; 
+      });
+      console.log("@dew1204/mint const ---------->", mintCost);
       setCost(mintCost);
-    } else setCost(0);
+    } catch (err) {
+      console.log("@dew1204/getCost ----------->", err);
+    }
   };
   /**
    * get Collections with account
    * @dew1204
    */
-  const getData = async () => {
+  const getData = async (_bidifyMinter = bidifyMinter) => {
     // @modified by dew
-    const BidifyMinter = new ethers.Contract(addresses[chainId], ABI, signer);
-    const collections = await BidifyMinter.getCollections().catch(err => { throw err });
-    console.log("collections ------------->", collections);
-    setCollections(collections);
+    try {
+      if (!_bidifyMinter) {
+        throw "cannot read the bidifyMint contract";
+      }
+      const collections = await _bidifyMinter.getCollections().catch(err => { throw `err in contract.getCollections call ${chainId}` });
+      console.log("@dew1204 collections ------------->", collections);
+      setCollections(collections);
+    } catch (err) {
+      console.log("@dew1204/getData ------->", err);
+    }
   };
 
   useEffect(() => {
-    console.log("current data ------------>", { address, chainId, factory: addresses[chainId] });
-    try {
-      if (address && addresses[chainId] && signer) {
-        // getCost();
-        // getData();
-      } 
-    } catch (err) {
-      console.log("current err ---------------->", err);
+    console.log("@dew1204/current web3 data ------------>", { address, chainId, factory: addresses[chainId] });
+
+    if (address && addresses[chainId] && signer) {
+      const _bidifyMinter = new ethers.Contract(addresses[chainId], ABI, signer);
+      setbidifyMinter(_bidifyMinter);
+      getCost(_bidifyMinter);
+      getData(_bidifyMinter);
+    } else {
+      setbidifyMinter(null);
     }
-  }, [amount, address, chainId, signer]);
+
+  }, [address, chainId, signer]);
 
   /**
    * validate if all input fields are valid
@@ -491,6 +504,8 @@ const Home = () => {
 
       if (!isConnected) {
         throw "Connect wallet before start.";
+      } else if (!bidifyMinter) {
+        throw "Can't not read contract, please reconnect the wallet"
       }
       
       filterFormFields(); //filters all fields are valid
@@ -557,7 +572,7 @@ const Home = () => {
       };
       const tokenURIJson = metadataUrl;
 
-      const BidifyMinter = new ethers.Contract(addresses[chainId], ABI, signer);
+      
       let platform = ethers.constants.AddressZero;
       for (let i = 0; i < collections.length; i++) {
         if (collections[i].name === collectionName)
@@ -566,7 +581,7 @@ const Home = () => {
       
       let exist = platform === ethers.constants.AddressZero ? false : true;
       if (!advanced) exist = true;
-      const mintCost = await BidifyMinter.calculateCost(amount).catch(err => {
+      const mintCost = await bidifyMinter.calculateCost(amount).catch(err => {
         console.log(err);
         throw "Mint cost calculation failed.";
       });
@@ -586,7 +601,7 @@ const Home = () => {
           gasPrice: 3000000,
         },
       });
-      // const tx = await BidifyMinter.mint(tokenURIJson.toString(), amount, advanced ? collectionName : "Standard BidifyMint Nft", advanced ? symbol : "SBN", advanced ? platform : standard[chainId], { value: mintCost, from: account, gasLimit:3000000, gasPrice:3000000})
+      // const tx = await bidifyMinter.mint(tokenURIJson.toString(), amount, advanced ? collectionName : "Standard BidifyMint Nft", advanced ? symbol : "SBN", advanced ? platform : standard[chainId], { value: mintCost, from: account, gasLimit:3000000, gasPrice:3000000})
       console.log("@dew1204 ----------->", platform, advanced, advanced ? platform : standard[chainId]);
       console.log("@dew1204mint-------->", {
         uri:tokenURIJson.toString(),
@@ -597,7 +612,7 @@ const Home = () => {
         etc: { value: mintCost, from: address, gasLimit: 3000000, gasPrice: 3000000 }
       })
       
-      const tx = await BidifyMinter.mint(
+      const tx = await bidifyMinter.mint(
         tokenURIJson.toString(),
         amount,
         advanced ? collectionName : "Standard BidifyMint Nft",
@@ -622,6 +637,7 @@ const Home = () => {
       let tokenIds = [];
       // if (chainId === 4 || chainId === 43114 || chainId === 56 || chainId === 100 || chainId === 61 || chainId === 1285 || chainId === 9001 || chainId === 10 || chainId === 42161) {
       // }
+      console.log("@dew1204 tx event ------------->", txHash.events);
       if (chainId === 137) {
         for (let i = 1; i < txHash.events.length - 3; i++) {
           const hex = txHash.events[i].topics[3];
@@ -634,13 +650,12 @@ const Home = () => {
           tokenIds.push(Number(ethers.utils.hexValue(hex)));
         }
       } else {
-        console.log("tx---------->event", txHash.events);
         tokenIds = txHash.events.map((event) => {
-          const hex = event.topics[0];
+          const hex = event.topics[3];
           return Number(ethers.utils.hexValue(hex));
         });
       }
-      // console.log(tokenIds)
+      console.log("@dew1204 tokenIds --------------->", tokenIds);
       setActiveStep(3);
       setRate(0);
 

@@ -49,7 +49,7 @@ export const addresses = {
   [NetworkId.zkSyncMainnet]: "0x694DCbFBD60e8C4923B130570Ba55Ba237c4f12A",
 
 
-  [NetworkId.GOERLI]: "0xc9BE5EC3AAAafaaab3aD973Bc64596f11D8401A2",//verified
+  [NetworkId.GOERLI]: "0x42f12c2BCee63eFC1894f47D37e9535759C19ecA",//verified
   [NetworkId.SEPOLIA]: "0x09994c7E1eD02E56d097BcCFD0Da47dFF0F66e99"//verified
 };
 export const standard = {
@@ -67,8 +67,8 @@ export const standard = {
   [NetworkId.zkSyncTestnet]: "0x464Efc76aedddAD363dAd78375873456C0a21BBc",
   [NetworkId.zkSyncMainnet]: "0x464Efc76aedddAD363dAd78375873456C0a21BBc",
 
-  [NetworkId.GOERLI]: "0x63A7dc874e5339E43a7868d07b1640012eCfe064",//verified
-  [NetworkId.SEPOLIA]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E"//verified
+  [NetworkId.GOERLI]: "0x0d624D267b814d3344B2C56b1bd4a4318a44683b",//verified
+  [NetworkId.SEPOLIA]: "0x09994c7E1eD02E56d097BcCFD0Da47dFF0F66e99"//verified
 }
 // export const platforms = {
 //   [NetworkId.POLYGON]: "0x175bc1bACF1fc054A5CA30AdeC155f00AaA2ce06",
