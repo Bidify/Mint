@@ -20,20 +20,16 @@ export const NetworkId = {
   GNOSIS: 100,
   ETC: 61,
   KLAYTN: 8217,
-  EVMOS: 9001,
-  MOONRIVER: 1285,
   ARBITRUM: 42161,
   OPTIMISM: 10,
-  zkSyncTestnet: 280,
-  zkSyncMainnet: 324,
-
+  
   GOERLI: 5,
   SEPOLIA: 11155111
   // FUJI: 43113,
 };
 export const supportedChainIds = [ NetworkId.POLYGON, NetworkId.BSC, NetworkId.ETC, NetworkId.GNOSIS, NetworkId.ETHERGEM, NetworkId.AVALANCHE, NetworkId.MOONRIVER, NetworkId.EVMOS, NetworkId.ARBITRUM, NetworkId.OPTIMISM]
 
-export const addresses = {
+export const FACTORY_ADDRESSES = {
   [NetworkId.POLYGON]: "0x683F246253934862B86b042476837a5e9B91E326", //verified
   [NetworkId.RINKEBY]: "0x0f79f4239F343fc932F357eFAAeE405a90d28e42", //verified
   [NetworkId.ETHERGEM]: "0x5A4Aa5B8f54763A22A7bE54F30Be650fe040b8eA", //
@@ -49,10 +45,10 @@ export const addresses = {
   [NetworkId.zkSyncMainnet]: "0x694DCbFBD60e8C4923B130570Ba55Ba237c4f12A",
 
 
-  [NetworkId.GOERLI]: "0x42f12c2BCee63eFC1894f47D37e9535759C19ecA",//verified
+  [NetworkId.GOERLI]: "0x42f12c2BCee63eFC1894f47D37e9535759C19ecA",//verified & adjusted
   [NetworkId.SEPOLIA]: "0x09994c7E1eD02E56d097BcCFD0Da47dFF0F66e99"//verified
 };
-export const standard = {
+export const TOKEN_ADDRESSES = {
   [NetworkId.POLYGON]: "0x78A46265BedEfF1f18C3696dB01669A76B7833C8",
   [NetworkId.RINKEBY]: "0xFe4317e87958f5b408aF9d8fFf78F228435fd0C8",
   [NetworkId.ETHERGEM]: "0xf3195693ddb32822cdf759305a91b674ab1382e1",
@@ -62,12 +58,12 @@ export const standard = {
   [NetworkId.ETC]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
   [NetworkId.MOONRIVER]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
   [NetworkId.EVMOS]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
-  [NetworkId.ARBITRUM]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
+  [NetworkId.ARBITRUM]: "0xCbd697  f76e90435Dce788ce14e096f732803fA71",
   [NetworkId.OPTIMISM]: "0xC254F215840EB03Ef7ff7E2707CB5787d529579a",
   [NetworkId.zkSyncTestnet]: "0x464Efc76aedddAD363dAd78375873456C0a21BBc",
   [NetworkId.zkSyncMainnet]: "0x464Efc76aedddAD363dAd78375873456C0a21BBc",
 
-  [NetworkId.GOERLI]: "0x0d624D267b814d3344B2C56b1bd4a4318a44683b",//verified
+  [NetworkId.GOERLI]: "0x0772B464e1aA4b3184a2FC440cd854808fBa7189",//verified & adjusted
   [NetworkId.SEPOLIA]: "0x09994c7E1eD02E56d097BcCFD0Da47dFF0F66e99"//verified
 }
 // export const platforms = {

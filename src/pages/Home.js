@@ -19,14 +19,15 @@ import VerticalLinearStepper from "../components/Stepper";
 // import { switchNetwork } from "../wallet"
 import useWeb3 from "../hooks/useWeb3";
 
+
 import {
-  addresses,
+  FACTORY_ADDRESSES,
   NETWORKS,
   supportedChainIds,
   getLogUrl,
   snowApi,
   baseUrl,
-  standard,
+  TOKEN_ADDRESSES,
   PINATA_KEY,
 } from "../constants/config";
 import { ABI, BIDIFY, ERC721_ABI } from "../constants/abis";
@@ -100,11 +101,11 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    if (toast) {
-      setTimeout(() => setToast(""), 8000);
-    }
-  }, [toast]);
+  // useEffect(() => {
+  //   if (toast) {
+  //     setTimeout(() => setToast(""), 8000);
+  //   }
+  // }, [toast]);
 
   useEffect(() => {
     document.addEventListener("click", handleClick);
@@ -218,13 +219,15 @@ const Home = () => {
         BIDIFY.address[chainId],
         true
       );
-      await tx.wait();
+      console.log("@dew1204/approve --------------->", tx);
+      const _tx = await tx.wait();
+      console.log("@dew1204/approve --------------->", _tx);
       await checkAllowd(erc721);
       setApproving(false);
     } catch (e) {
       setApproving(false);
       setToast(e.message);
-      console.log(e.message);
+      console.log(e);
     }
   };
   /**
@@ -448,7 +451,7 @@ const Home = () => {
    * get Collections with account
    * @dew1204
    */
-  const getData = async (_bidifyMinter = bidifyMinter) => {
+  const getCollectionsData = async (_bidifyMinter = bidifyMinter) => {
     // @modified by dew
     try {
       if (!_bidifyMinter) {
@@ -458,18 +461,19 @@ const Home = () => {
       console.log("@dew1204 collections ------------->", collections);
       setCollections(collections);
     } catch (err) {
-      console.log("@dew1204/getData ------->", err);
+      console.log("@dew1204/getCollectionsData ------->", err);
+      setCollections([]);
     }
   };
 
   useEffect(() => {
-    console.log("@dew1204/current web3 data ------------>", { address, chainId, factory: addresses[chainId] });
+    console.log("@dew1204/current web3 data ------------>", { address, chainId, factory: FACTORY_ADDRESSES[chainId] });
 
-    if (address && addresses[chainId] && signer) {
-      const _bidifyMinter = new ethers.Contract(addresses[chainId], ABI, signer);
+    if (address && FACTORY_ADDRESSES[chainId] && signer) {
+      const _bidifyMinter = new ethers.Contract(FACTORY_ADDRESSES[chainId], ABI, signer);
       setbidifyMinter(_bidifyMinter);
       getCost(_bidifyMinter);
-      getData(_bidifyMinter);
+      getCollectionsData(_bidifyMinter);
     } else {
       setbidifyMinter(null);
     }
@@ -482,7 +486,7 @@ const Home = () => {
    */
   const filterFormFields = () => {
     if (!buffer) {
-      throw "Upload data for minting NFT";
+      // throw "Upload data for minting NFT";
     } else if (!name) {
       throw "Input name for NFT";
     } else if (!description) {
@@ -498,7 +502,7 @@ const Home = () => {
 
   const onSubmit = async () => {
 
-    console.log("@dew1204/onSubmit-------------->", { address: address, chainId: chainId, signer: signer, factory: addresses[chainId] });
+    console.log("@dew1204/onSubmit-------------->", { address: address, chainId: chainId, signer: signer, factory: FACTORY_ADDRESSES[chainId] });
 
     try {
 
@@ -591,9 +595,9 @@ const Home = () => {
       console.log("------------", {
         uri: tokenURIJson.toString(),
         amount,
-        collectionName: advanced ? collectionName : "Standard BidifyMint Nft",
+        collectionName: advanced ? collectionName : "TOKEN_ADDRESSES BidifyMint Nft",
         symbol: advanced ? symbol : "SBN",
-        platform: advanced ? platform : standard[chainId],
+        platform: advanced ? platform : TOKEN_ADDRESSES[chainId],
         addition: {
           value: mintCost,
           from: address,
@@ -601,23 +605,23 @@ const Home = () => {
           gasPrice: 3000000,
         },
       });
-      // const tx = await bidifyMinter.mint(tokenURIJson.toString(), amount, advanced ? collectionName : "Standard BidifyMint Nft", advanced ? symbol : "SBN", advanced ? platform : standard[chainId], { value: mintCost, from: account, gasLimit:3000000, gasPrice:3000000})
-      console.log("@dew1204 ----------->", platform, advanced, advanced ? platform : standard[chainId]);
+      // const tx = await bidifyMinter.mint(tokenURIJson.toString(), amount, advanced ? collectionName : "TOKEN_ADDRESSES BidifyMint Nft", advanced ? symbol : "SBN", advanced ? platform : TOKEN_ADDRESSES[chainId], { value: mintCost, from: account, gasLimit:3000000, gasPrice:3000000})
+      console.log("@dew1204 ----------->", platform, advanced, advanced ? platform : TOKEN_ADDRESSES[chainId]);
       console.log("@dew1204mint-------->", {
         uri:tokenURIJson.toString(),
         amount,
-        collection: advanced ? collectionName : "Standard BidifyMint Nft",
+        collection: advanced ? collectionName : "TOKEN_ADDRESSES BidifyMint Nft",
         symbol: advanced ? symbol : "SBN",
-        platform: advanced ? platform : standard[chainId],
+        platform: advanced ? platform : TOKEN_ADDRESSES[chainId],
         etc: { value: mintCost, from: address, gasLimit: 3000000, gasPrice: 3000000 }
       })
       
       const tx = await bidifyMinter.mint(
         tokenURIJson.toString(),
         amount,
-        advanced ? collectionName : "Standard BidifyMint Nft",
+        advanced ? collectionName : "TOKEN_ADDRESSES BidifyMint Nft",
         advanced ? symbol : "SBN",
-        advanced ? platform : standard[chainId],
+        advanced ? platform : TOKEN_ADDRESSES[chainId],
         { value: mintCost, from: address, gasLimit: 3000000, gasPrice: 3000000 }
       ).catch(err => {
         console.log(err);
@@ -722,7 +726,7 @@ const Home = () => {
       }
 
       setShowAlert(true);
-      getData();
+      getCollectionsData();
       if (type === "") {
         setType("none");
       }
@@ -739,30 +743,31 @@ const Home = () => {
       setRate(0);
     }
   };
-  // useEffect(() => {
-  //   let exist = false;
-  //   for (let i = 0; i < collections.length; i++) {
-  //     if (collections[i].name === collectionName) {
-  //       exist = true;
-  //       setSymbol(collections[i].symbol);
-  //       if (chainId !== 10 || chainId !== 42161)
-  //         setErc721(collections[i].platform);
-  //       if (chainId !== 10 || chainId !== 42161)
-  //         checkAllowd(collections[i].platform);
-  //     }
-  //   }
-  //   if (exist) {
-  //     setSymbolEditable(false);
-  //     if (chainId === 10 || chainId === 42161) setForSale(false);
-  //   } else {
-  //     setSymbolEditable(true);
-  //     setSymbol("");
-  //     setErc721("");
-  //     setApproved(false);
-  //     setForSale(false);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [collectionName, chainId]);
+
+  useEffect(() => {
+    let exist = false;
+    for (let i = 0; i < collections.length; i++) {
+      if (collections[i].name === collectionName) {
+        exist = true;
+        setSymbol(collections[i].symbol);
+        if (chainId !== 10 || chainId !== 42161)
+          setErc721(collections[i].platform);
+        if (chainId !== 10 || chainId !== 42161)
+          checkAllowd(collections[i].platform);
+      }
+    }
+    if (exist) {
+      setSymbolEditable(false);
+      if (chainId === 10 || chainId === 42161) setForSale(false);
+    } else {
+      setSymbolEditable(true);
+      setSymbol("");
+      setErc721("");
+      setApproved(false);
+      setForSale(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collectionName, chainId]);
   
   const handleSelectCollection = (item) => {
     setSymbolEditable(false);
@@ -1226,13 +1231,13 @@ const Home = () => {
                   />
                 </svg>
               )}
-              {advanced ? "Mint Advanced NFT" : "Mint Standard NFT"}
+              {advanced ? "Mint Advanced NFT" : "Mint TOKEN_ADDRESSES NFT"}
             </button>
           </div>
           <div className="flex flex-col w-full">
             <div className="flex items-center justify-center w-full mt-8">
               <span className="ml-3 mr-3 text-lg font-medium text-gray-900 dark:text-gray-300">
-                Standard
+                TOKEN_ADDRESSES
               </span>
               <label
                 htmlFor="yellow-toggle"
@@ -1324,7 +1329,7 @@ const Home = () => {
                   </div>
                   <div
                     className="relative flex"
-                    ref={collection}
+                    // ref={collection}
                     id="collection"
                   >
                     <input
@@ -1334,8 +1339,6 @@ const Home = () => {
                       value={collectionName}
                       onChange={(e) => setCollectionName(e.target.value)}
                     />
-
-                    {/* <!-- Dropdown menu --> */}
                     {openCollection && (
                       <div className="z-10 mr-2 text-base list-none bg-white w-full absolute top-[45px] rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
                         <ul
@@ -1655,7 +1658,7 @@ const Home = () => {
                   />
                 </svg>
               )}
-              {advanced ? "Mint Advanced NFT" : "Mint Standard NFT"}
+              {advanced ? "Mint Advanced NFT" : "Mint TOKEN_ADDRESSES NFT"}
             </button>
 
             {isLoading && <VerticalLinearStepper activeStep={activeStep} forSale={forSale} rate={rate}/>}

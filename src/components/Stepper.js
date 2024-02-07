@@ -60,7 +60,7 @@ const VerticalLinearStepper = ({ activeStep = 0, forSale = false, rate = 30 }) =
   const CircularProgressWithLabel = (props) => {
     return (
       <Box sx={{ position: 'relative', display: 'inline-flex', ml: -1 }}>
-        <CircularProgress variant="determinate" value={rate} />
+        <CircularProgress variant={ rate === 0 ? "indeterminate" : "determinate"} value={rate} />
         <Box
           sx={{
             top: 0,
@@ -74,7 +74,7 @@ const VerticalLinearStepper = ({ activeStep = 0, forSale = false, rate = 30 }) =
           }}
         >
           <Typography variant="caption" component="div" color="text.secondary">
-            {`${Math.round(rate)}%`}
+            { rate > 0 && `${Math.round(rate)}%` }
           </Typography>
         </Box>
       </Box>
