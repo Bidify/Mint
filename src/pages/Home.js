@@ -78,7 +78,8 @@ const Home = () => {
   const [expand, setExpand] = useState(false);
   const [agree, setAgree] = useState(false);
 
-  const [bidifyMinter, setbidifyMinter] = useState(null);
+  const [bidifyMinter, setBidifyMinter] = useState(null);
+  const [bidifyToken, setBidifyToken] = useState(null);
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [rate, setRate] = React.useState(0);
@@ -162,6 +163,12 @@ const Home = () => {
     }
   };
   const readImage = (event) => {
+    console.log(event.target.files.length)
+    if (!event.target.files.length) {
+      setBuffer(null);
+      setType("");
+      return;
+    }
     event.preventDefault();
     const file = event.target.files[0];
     const reader = new window.FileReader();
@@ -194,17 +201,20 @@ const Home = () => {
     return logs ? logs.length : 0;
   };
   const checkAllowd = async (address) => {
-    const BidifyToken = new ethers.Contract(
-      address,
-      ERC721_ABI,
-      // library.getSigner() @modified by dew
-      signer,
-    );
-    const allowed = await BidifyToken.isApprovedForAll(
-      address,
-      BIDIFY.address[chainId]
-    );
-    setApproved(allowed);
+    console.log(address, BIDIFY.address[chainId])
+    try {
+      const allowed = await bidifyToken.isApprovedForAll(
+        address,
+        BIDIFY.address[chainId]
+      ).catch(err => {
+        console.log("@dew1204/not allowed-------->", "checkAllowed")
+        throw "";
+      });
+      setApproved(allowed);
+      setErc721(address);
+    } catch (err) {
+      setToast("This is not allowed")
+    }
   };
   const signList = async () => {
     setApproving(true);
@@ -471,11 +481,14 @@ const Home = () => {
 
     if (address && FACTORY_ADDRESSES[chainId] && signer) {
       const _bidifyMinter = new ethers.Contract(FACTORY_ADDRESSES[chainId], ABI, signer);
-      setbidifyMinter(_bidifyMinter);
+      const _bidifyToken = new ethers.Contract(address, ERC721_ABI, signer);
+      setBidifyToken(_bidifyToken);
+      setBidifyMinter(_bidifyMinter);
       getCost(_bidifyMinter);
       getCollectionsData(_bidifyMinter);
     } else {
-      setbidifyMinter(null);
+      setBidifyMinter(null);
+      setBidifyToken(null);
     }
 
   }, [address, chainId, signer]);
@@ -741,24 +754,23 @@ const Home = () => {
       setIsLoading(false);
       setActiveStep(0);
       setRate(0);
+
+      setBuffer(null);
+      setType("");
     }
   };
 
   useEffect(() => {
     let exist = false;
-    for (let i = 0; i < collections.length; i++) {
-      if (collections[i].name === collectionName) {
-        exist = true;
-        setSymbol(collections[i].symbol);
-        if (chainId !== 10 || chainId !== 42161)
-          setErc721(collections[i].platform);
-        if (chainId !== 10 || chainId !== 42161)
-          checkAllowd(collections[i].platform);
+
+    const _collection = collections.find(item => item.name === collectionName);
+    if (_collection) {
+      exist = true;
+      setSymbol(_collection.symbol);
+      if (chainId !== 10 || chainId !== 42161) {
+        // setErc721(_collection.platform);
+        checkAllowd(_collection.platform);
       }
-    }
-    if (exist) {
-      setSymbolEditable(false);
-      if (chainId === 10 || chainId === 42161) setForSale(false);
     } else {
       setSymbolEditable(true);
       setSymbol("");
@@ -766,15 +778,17 @@ const Home = () => {
       setApproved(false);
       setForSale(false);
     }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collectionName, chainId]);
   
   const handleSelectCollection = (item) => {
+    console.log(item)
     setSymbolEditable(false);
     setOpenCollection(false);
     setCollectionName(item.name);
     setSymbol(item.symbol);
-    if (chainId !== 10 || chainId !== 42161) setErc721(item.platform);
+    // if (chainId !== 10 || chainId !== 42161) setErc721(item.platform);
   };
   const handleDismiss = () => {
     setBuffer(null);
