@@ -22,7 +22,7 @@ export const NetworkId = {
   KLAYTN: 8217,
   ARBITRUM: 42161,
   OPTIMISM: 10,
-  
+  MANTLE: 5000,
   GOERLI: 5,
   SEPOLIA: 11155111
   // FUJI: 43113,
@@ -30,13 +30,15 @@ export const NetworkId = {
 export const supportedChainIds = [ NetworkId.POLYGON, NetworkId.BSC, NetworkId.ETC, NetworkId.GNOSIS, NetworkId.ETHERGEM, NetworkId.AVALANCHE, NetworkId.MOONRIVER, NetworkId.EVMOS, NetworkId.ARBITRUM, NetworkId.OPTIMISM]
 
 export const FACTORY_ADDRESSES = {
-  // [NetworkId.POLYGON]: "0x683F246253934862B86b042476837a5e9B91E326", //verified
+  [NetworkId.BSC]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc", //verified & adjusted
+  [NetworkId.AVALANCHE]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc", //verified & adjusted
+  [NetworkId.POLYGON]: "0x7c57A86387EC4e5cd5925e4ed399D01123d848ac",
+  [NetworkId.ETC]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc", //
+  [NetworkId.MANTLE]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc",//verified & adjusted
+
   // [NetworkId.RINKEBY]: "0x0f79f4239F343fc932F357eFAAeE405a90d28e42", //verified
   // [NetworkId.ETHERGEM]: "0x5A4Aa5B8f54763A22A7bE54F30Be650fe040b8eA", //
-  // [NetworkId.AVALANCHE]: "0x0a8D5435a43c8d63b47D6E61F5eE88868A1b8Ed9", //verified
-  // [NetworkId.BSC]: "0x57aa9274d64185A77DAde4c104A49eD52C9D42Af", //verified
   // [NetworkId.GNOSIS]: "0x86E25f1e266eA4831b3CBb68164753DcbA30D047", //verified
-  // [NetworkId.ETC]: "0x86E25f1e266eA4831b3CBb68164753DcbA30D047", //verified
   // [NetworkId.EVMOS]: "0x86E25f1e266eA4831b3CBb68164753DcbA30D047", //verified
   // [NetworkId.MOONRIVER]: "0x86E25f1e266eA4831b3CBb68164753DcbA30D047", //verified
   // [NetworkId.ARBITRUM]: "0x86E25f1e266eA4831b3CBb68164753DcbA30D047", //verified
@@ -49,13 +51,15 @@ export const FACTORY_ADDRESSES = {
   [NetworkId.SEPOLIA]: "0x09994c7E1eD02E56d097BcCFD0Da47dFF0F66e99"//verified
 };
 export const TOKEN_ADDRESSES = {
-  // [NetworkId.POLYGON]: "0x78A46265BedEfF1f18C3696dB01669A76B7833C8",
+  [NetworkId.BSC]: "0xCE387EEAD4bf81D5665EacBC457CcAea51955863",
+  [NetworkId.AVALANCHE]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E", //verified & adjusted
+  [NetworkId.POLYGON]: "0x78A46265BedEfF1f18C3696dB01669A76B7833C8",
+  [NetworkId.ETC]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E",
+  [NetworkId.MANTLE]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E",//verified & adjusted
+
   // [NetworkId.RINKEBY]: "0xFe4317e87958f5b408aF9d8fFf78F228435fd0C8",
   // [NetworkId.ETHERGEM]: "0xf3195693ddb32822cdf759305a91b674ab1382e1",
-  // [NetworkId.AVALANCHE]: "0x0603347E9f803D28b59B8346480b1a43a11eE100",
-  // [NetworkId.BSC]: "0xCE387EEAD4bf81D5665EacBC457CcAea51955863",
   // [NetworkId.GNOSIS]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
-  // [NetworkId.ETC]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
   // [NetworkId.MOONRIVER]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
   // [NetworkId.EVMOS]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
   // [NetworkId.ARBITRUM]: "0xCbd697  f76e90435Dce788ce14e096f732803fA71",
