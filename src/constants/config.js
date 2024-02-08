@@ -48,7 +48,7 @@ export const FACTORY_ADDRESSES = {
 
 
   // [NetworkId.GOERLI]: "0x42f12c2BCee63eFC1894f47D37e9535759C19ecA",//verified & adjusted
-  [NetworkId.GOERLI]: "0x4fA8E2a4beEB04B28958557Ae3a9Ea4D6E75908d",//verified & adjusted
+  [NetworkId.GOERLI]: "0xdCeFcaA6ED6D4cAA953F8F7aB71978b6aD2107c0",//verified & adjusted
   [NetworkId.SEPOLIA]: "0x09994c7E1eD02E56d097BcCFD0Da47dFF0F66e99"//verified
 };
 export const TOKEN_ADDRESSES = {
@@ -68,7 +68,7 @@ export const TOKEN_ADDRESSES = {
   // [NetworkId.zkSyncTestnet]: "0x464Efc76aedddAD363dAd78375873456C0a21BBc",
   // [NetworkId.zkSyncMainnet]: "0x464Efc76aedddAD363dAd78375873456C0a21BBc",
 
-  [NetworkId.GOERLI]: "0x60ee4950B3D1b4AE41b0fafC6A6809EA13A2A094",//verified & adjusted
+  [NetworkId.GOERLI]: "0x92d53Ae63e427BB78B34c3D7eF8a0dA95f238697",//verified & adjusted
   [NetworkId.SEPOLIA]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E"//verified
 }
 

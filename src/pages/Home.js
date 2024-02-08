@@ -671,20 +671,15 @@ const Home = () => {
       // if (chainId === 4 || chainId === 43114 || chainId === 56 || chainId === 100 || chainId === 61 || chainId === 1285 || chainId === 9001 || chainId === 10 || chainId === 42161) {
       // }
       console.log("@dew1204 tx event ------------->", txHash.events);
-      if (chainId === 137) {
+      if (chainId === 137) { //if polygon
         for (let i = 1; i < txHash.events.length - 3; i++) {
-          const hex = txHash.events[i].topics[3];
-          tokenIds.push(Number(ethers.utils.hexValue(hex)));
-        }
-      } else if (chainId === 280 || chainId === 324) {
-        for (let i = 0; i < txHash.events.length; i++) {
-          if (txHash.events[i].topics.length < 4) continue;
           const hex = txHash.events[i].topics[3];
           tokenIds.push(Number(ethers.utils.hexValue(hex)));
         }
       } else {
         tokenIds = txHash.events.map((event) => {
-          const hex = event.topics[3];
+          console.log(event)
+          const hex = event.topics.length > 1 ? event.topics[3] : event.topics[0];
           return Number(ethers.utils.hexValue(hex));
         });
       }
@@ -771,7 +766,7 @@ const Home = () => {
       setActiveStep(0);
       setRate(0);
 
-      setBuffer(null);
+      // setBuffer(null);
       setType("");
     }
   };
