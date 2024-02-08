@@ -32,7 +32,7 @@ export const supportedChainIds = [ NetworkId.POLYGON, NetworkId.BSC, NetworkId.E
 export const FACTORY_ADDRESSES = {
   [NetworkId.BSC]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc", //verified & adjusted
   [NetworkId.AVALANCHE]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc", //verified & adjusted
-  [NetworkId.POLYGON]: "0x7c57A86387EC4e5cd5925e4ed399D01123d848ac",
+  [NetworkId.POLYGON]: "0x58dD4052c3d4e4f020365AE4dfAE16d1Fdd1f763",//verified & adjusted
   [NetworkId.ETC]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc", //verified & adjusted
   [NetworkId.MANTLE]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc",//verified & adjusted
 
@@ -53,7 +53,7 @@ export const FACTORY_ADDRESSES = {
 export const TOKEN_ADDRESSES = {
   [NetworkId.BSC]: "0xCE387EEAD4bf81D5665EacBC457CcAea51955863",
   [NetworkId.AVALANCHE]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E", //verified & adjusted
-  [NetworkId.POLYGON]: "0x335E8a4604E7bdC163cEEdC12C30351d1AEc612f",
+  [NetworkId.POLYGON]: "0x08E7733a6D2a7Fc0363Dae117F8608AAb518F996",//verified & adjusted
   [NetworkId.ETC]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E",//verified & adjusted
   [NetworkId.MANTLE]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E",//verified & adjusted
 
