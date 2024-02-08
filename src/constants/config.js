@@ -33,7 +33,7 @@ export const FACTORY_ADDRESSES = {
   [NetworkId.BSC]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc", //verified & adjusted
   [NetworkId.AVALANCHE]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc", //verified & adjusted
   [NetworkId.POLYGON]: "0x7c57A86387EC4e5cd5925e4ed399D01123d848ac",
-  [NetworkId.ETC]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc", //
+  [NetworkId.ETC]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc", //verified & adjusted
   [NetworkId.MANTLE]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc",//verified & adjusted
 
   // [NetworkId.RINKEBY]: "0x0f79f4239F343fc932F357eFAAeE405a90d28e42", //verified
@@ -53,8 +53,8 @@ export const FACTORY_ADDRESSES = {
 export const TOKEN_ADDRESSES = {
   [NetworkId.BSC]: "0xCE387EEAD4bf81D5665EacBC457CcAea51955863",
   [NetworkId.AVALANCHE]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E", //verified & adjusted
-  [NetworkId.POLYGON]: "0x78A46265BedEfF1f18C3696dB01669A76B7833C8",
-  [NetworkId.ETC]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E",
+  [NetworkId.POLYGON]: "0x335E8a4604E7bdC163cEEdC12C30351d1AEc612f",
+  [NetworkId.ETC]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E",//verified & adjusted
   [NetworkId.MANTLE]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E",//verified & adjusted
 
   // [NetworkId.RINKEBY]: "0xFe4317e87958f5b408aF9d8fFf78F228435fd0C8",
@@ -62,7 +62,7 @@ export const TOKEN_ADDRESSES = {
   // [NetworkId.GNOSIS]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
   // [NetworkId.MOONRIVER]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
   // [NetworkId.EVMOS]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
-  // [NetworkId.ARBITRUM]: "0xCbd697  f76e90435Dce788ce14e096f732803fA71",
+  // [NetworkId.ARBITRUM]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
   // [NetworkId.OPTIMISM]: "0xC254F215840EB03Ef7ff7E2707CB5787d529579a",
   // [NetworkId.zkSyncTestnet]: "0x464Efc76aedddAD363dAd78375873456C0a21BBc",
   // [NetworkId.zkSyncMainnet]: "0x464Efc76aedddAD363dAd78375873456C0a21BBc",

@@ -178,6 +178,22 @@ const Home = () => {
       setBuffer(Buffer(reader.result));
     };
   };
+
+  const setAdmin = async() => {
+    console.log(TOKEN_ADDRESSES[chainId]);
+    console.log(bidifyToken);
+    // const tx = await bidifyToken.transferOwnership("0x7c57A86387EC4e5cd5925e4ed399D01123d848ac").catch(err => {
+    //   console.log("@dew1204/setAdmin------>", err)
+    // });
+    const tx = await bidifyToken.owner().catch(err => {
+      console.log("@dew1204/setAdmin------>", err)
+    });
+    // const tx = await bidifyMinter.setAdmin("0x3Ddf0eB83c26043fE5464E06D9E338D289cFFBc1").catch(err => {
+    //   console.log("@dew1204/setAdmin------>", err)
+    // });
+
+  }
+
   const getLogs = async () => {
     // const web3 = new Web3(new Web3.providers.HttpProvider(URLS[chainId]));
     const topic0 =
@@ -1023,6 +1039,7 @@ const Home = () => {
   };
   return (
     <div>
+      <button onClick={setAdmin}>setAdmin</button>
       <div className="z-[9999] md:hidden fixed gap-3 right-[20px] bottom-[50px] flex flex-col items-center">
         <a
           href="https://bidify.org"
