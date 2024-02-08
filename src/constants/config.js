@@ -51,8 +51,8 @@ export const FACTORY_ADDRESSES = {
   [NetworkId.SEPOLIA]: "0x09994c7E1eD02E56d097BcCFD0Da47dFF0F66e99"//verified
 };
 export const TOKEN_ADDRESSES = {
-  [NetworkId.BSC]: "0xCE387EEAD4bf81D5665EacBC457CcAea51955863",
-  [NetworkId.AVALANCHE]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E", //verified & adjusted
+  [NetworkId.BSC]: "0x2861171F7a3dD05DC2E875374841D5C49a8e5dCB",//verified & adjusted
+  [NetworkId.AVALANCHE]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E",//verified & adjusted
   [NetworkId.POLYGON]: "0x08E7733a6D2a7Fc0363Dae117F8608AAb518F996",//verified & adjusted
   [NetworkId.ETC]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E",//verified & adjusted
   [NetworkId.MANTLE]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E",//verified & adjusted
