@@ -179,21 +179,6 @@ const Home = () => {
     };
   };
 
-  const setAdmin = async() => {
-    console.log(TOKEN_ADDRESSES[chainId]);
-    console.log(bidifyToken);
-    // const tx = await bidifyToken.transferOwnership("0x7c57A86387EC4e5cd5925e4ed399D01123d848ac").catch(err => {
-    //   console.log("@dew1204/setAdmin------>", err)
-    // });
-    const tx = await bidifyToken.owner().catch(err => {
-      console.log("@dew1204/setAdmin------>", err)
-    });
-    // const tx = await bidifyMinter.setAdmin("0x3Ddf0eB83c26043fE5464E06D9E338D289cFFBc1").catch(err => {
-    //   console.log("@dew1204/setAdmin------>", err)
-    // });
-
-  }
-
   const getLogs = async () => {
     // const web3 = new Web3(new Web3.providers.HttpProvider(URLS[chainId]));
     const topic0 =
@@ -651,7 +636,8 @@ const Home = () => {
         advanced ? collectionName : "TOKEN_ADDRESSES BidifyMint Nft",
         advanced ? symbol : "SBN",
         advanced ? platform : TOKEN_ADDRESSES[chainId],
-        { value: mintCost, from: address, gasLimit: 3000000, gasPrice: 3000000 }
+        chainId === 137 ? { value: mintCost, from: address, gasLimit: 30000000, gasPrice: 30000000 } :
+        { value: mintCost, from: address }
       ).catch(err => {
         console.log(err);
         throw "NFT mint failed.";
@@ -672,10 +658,12 @@ const Home = () => {
       // }
       console.log("@dew1204 tx event ------------->", txHash.events);
       if (chainId === 137) { //if polygon
-        for (let i = 1; i < txHash.events.length - 3; i++) {
-          const hex = txHash.events[i].topics[3];
-          tokenIds.push(Number(ethers.utils.hexValue(hex)));
-        }
+        txHash.events.forEach(item => {
+          if (item.data === "0x") {
+            const hex = item.topics[3];
+            tokenIds.push(Number(ethers.utils.hexValue(hex)));
+          }
+        })
       } else {
         tokenIds = txHash.events.map((event) => {
           console.log(event)
@@ -1034,7 +1022,6 @@ const Home = () => {
   };
   return (
     <div>
-      <button onClick={setAdmin}>setAdmin</button>
       <div className="z-[9999] md:hidden fixed gap-3 right-[20px] bottom-[50px] flex flex-col items-center">
         <a
           href="https://bidify.org"
