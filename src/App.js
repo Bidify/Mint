@@ -53,13 +53,13 @@ const defaultChains = [
     iconUrl: "/chain_logos/etc.svg",
   },
   classic,
-  optimism,
-  arbitrum,
+  // optimism,
+  // arbitrum,
   {
     ...mantle,
     iconUrl: "/chain_logos/mantle.avif",
   },
-  base,
+  // base,
   {
     ...scroll,
     iconUrl: "/chain_logos/scroll.svg",
@@ -71,8 +71,8 @@ const { chains, publicClient } = configureChains(defaultChains, [
   // infuraProvider({ apiKey: "07556fc9491e4dbb9c75160d21174a79" }),
   publicProvider(),
 ]);
-const projectId =
-  process.env.REACT_APP_PROJECT_ID || "mint.bidify.cloud's Project id";
+// const projectId = process.env.REACT_APP_PROJECT_ID || "mint.bidify.cloud's Project id";
+const projectId = process.env.REACT_APP_PROJECT_ID || "e89228fed40d4c6e9520912214dfd68b";
 
 const connectors = connectorsForWallets([
   {

@@ -78,6 +78,8 @@ const Home = () => {
   const [expand, setExpand] = useState(false);
   const [agree, setAgree] = useState(false);
 
+  const inputFile = React.useRef(null);
+
   const [bidifyMinter, setBidifyMinter] = useState(null);
   const [bidifyToken, setBidifyToken] = useState(null);
 
@@ -102,11 +104,11 @@ const Home = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (toast) {
-  //     setTimeout(() => setToast(""), 8000);
-  //   }
-  // }, [toast]);
+  useEffect(() => {
+    if (toast) {
+      setTimeout(() => setToast(""), 5000);
+    }
+  }, [toast]);
 
   useEffect(() => {
     document.addEventListener("click", handleClick);
@@ -166,6 +168,7 @@ const Home = () => {
     console.log(event.target.files.length)
     if (!event.target.files.length) {
       setBuffer(null);
+      inputFile.current.value = "";
       setType("");
       return;
     }
@@ -203,18 +206,22 @@ const Home = () => {
   };
   const checkAllowd = async (address) => {
     console.log(address, BIDIFY.address[chainId])
+
     try {
+      if (!BIDIFY.address[chainId]) {
+        throw "No auction for this chain";
+      }
       const allowed = await bidifyToken.isApprovedForAll(
         address,
         BIDIFY.address[chainId]
       ).catch(err => {
-        console.log("@dew1204/not allowed-------->", "checkAllowed")
-        throw "";
+        console.log("@dew1204/not allowed-------->", err)
+        throw "This is not allowed";
       });
       setApproved(allowed);
       setErc721(address);
     } catch (err) {
-      setToast("This is not allowed")
+      setToast(err)
     }
   };
   const signList = async () => {
@@ -627,16 +634,17 @@ const Home = () => {
         collection: advanced ? collectionName : "TOKEN_ADDRESSES BidifyMint Nft",
         symbol: advanced ? symbol : "SBN",
         platform: advanced ? platform : TOKEN_ADDRESSES[chainId],
-        etc: { value: mintCost, from: address, gasLimit: 3000000, gasPrice: 3000000 }
-      })
-      
+        etc: chainId === 137 ? { value: mintCost, from: address, gasLimit: 285000, gasPrice: ethers.utils.parseUnits('300', 'gwei') } :
+        { value: mintCost, from: address }
+      });
+
       const tx = await bidifyMinter.mint(
         tokenURIJson.toString(),
         amount,
         advanced ? collectionName : "TOKEN_ADDRESSES BidifyMint Nft",
         advanced ? symbol : "SBN",
         advanced ? platform : TOKEN_ADDRESSES[chainId],
-        chainId === 137 ? { value: mintCost, from: address, gasLimit: 30000000, gasPrice: 30000000 } :
+        chainId === 137 ? { value: mintCost, from: address, gasLimit: 285000, gasPrice: ethers.utils.parseUnits('300', 'gwei') } :
         { value: mintCost, from: address }
       ).catch(err => {
         console.log(err);
@@ -755,6 +763,7 @@ const Home = () => {
       setRate(0);
 
       // setBuffer(null);
+      // inputFile.current.value = "";
       setType("");
     }
   };
@@ -791,6 +800,8 @@ const Home = () => {
   };
   const handleDismiss = () => {
     setBuffer(null);
+    inputFile.current.value = "";//@dew1204 rest file input
+
     setType(null);
     setName("");
     setCollectionName("");
@@ -1284,6 +1295,7 @@ const Home = () => {
               aria-describedby="user_avatar_help"
               id="user_avatar"
               type="file"
+              ref={inputFile}
               accept="image/png, image/gif, image/jpeg"
               onChange={readImage}
             />
@@ -1674,7 +1686,7 @@ const Home = () => {
               {advanced ? "Mint Advanced NFT" : "Mint TOKEN_ADDRESSES NFT"}
             </button>
 
-            {isLoading && <VerticalLinearStepper activeStep={activeStep} forSale={forSale} rate={rate}/>}
+            {isLoading && <VerticalLinearStepper activeStep={activeStep} forSale={forSale} rate={rate} chain={NETWORKS[chainId].label}/>}
           </div>
         </div>
       </div>
