@@ -1,120 +1,24 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import "./App.css";
-import Home from "./pages/Home";
-
-import ActiveWeb3Provider from "./contexts/Web3Context";
-import { Web3Provider } from "@ethersproject/providers";
-// import NotificationProvider from "../src/contexts/NotificationContext";
-// import GA from './utils/GoogleAnalytics'
-import { useAnalytics } from "./utils/GoogleAnalytics";
-import { Wrapper } from "./components/Wrapper";
-
-//rainbowkit @used by dew
-import "@rainbow-me/rainbowkit/styles.css";
-import {
-  RainbowKitProvider,
-  connectorsForWallets,
-} from "@rainbow-me/rainbowkit";
-
-import { publicProvider } from "wagmi/providers/public";
-
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
-
-import {
-  polygon,
-  avalanche,
-  bsc,
-  classic,
-  optimism,
-  arbitrum,
-  mantle,
-  base,
-  scroll,
-  goerli,
-  sepolia,
-} from "wagmi/chains";
-
-import {
-  metaMaskWallet,
-  rainbowWallet,
-  walletConnectWallet,
-  trustWallet,
-  ledgerWallet,
-  phantomWallet,
-  okxWallet,
-} from "@rainbow-me/rainbowkit/wallets";
-
-const defaultChains = [
-  polygon,
-  bsc,
-  avalanche,
-  {
-    ...classic,
-    iconUrl: "/chain_logos/etc.svg",
-  },
-  classic,
-  // optimism,
-  // arbitrum,
-  {
-    ...mantle,
-    iconUrl: "/chain_logos/mantle.avif",
-  },
-  // base,
-  {
-    ...scroll,
-    iconUrl: "/chain_logos/scroll.svg",
-  },
-  sepolia,
-  goerli,
-];
-const { chains, publicClient } = configureChains(defaultChains, [
-  // infuraProvider({ apiKey: "07556fc9491e4dbb9c75160d21174a79" }),
-  publicProvider(),
-]);
-// const projectId = process.env.REACT_APP_PROJECT_ID || "mint.bidify.cloud's Project id";
-const projectId = process.env.REACT_APP_PROJECT_ID || "e89228fed40d4c6e9520912214dfd68b";
-
-const connectors = connectorsForWallets([
-  {
-    groupName: "mint.bidify.org",
-    wallets: [
-      metaMaskWallet({ projectId, chains, shimDisconnect: true }),
-      phantomWallet({ chains }),
-      walletConnectWallet({ projectId, chains }),
-      rainbowWallet({ projectId, chains }),
-      trustWallet({ projectId, chains }),
-      ledgerWallet({ projectId, chains }),
-      okxWallet({ projectId, chains }),
-    ],
-  },
-]);
-
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient,
-});
-
-function getLibrary(provider) {
-  return new Web3Provider(provider);
-}
+import logo from './logo.svg';
+import './App.css';
 
 function App() {
-  //@ modified by dew
-  const { initialized } = useAnalytics();
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
-          <ActiveWeb3Provider>
-            <BrowserRouter>
-              <Wrapper initialized={initialized} />
-              <Routes>
-                <Route path="/" element={<Home />} />
-              </Routes>
-            </BrowserRouter>
-          </ActiveWeb3Provider>
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Learn React
+        </a>
+      </header>
+    </div>
   );
 }
 
