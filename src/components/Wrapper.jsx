@@ -4,7 +4,6 @@ import { useLocation } from "react-router-dom"
 
 export const Wrapper = (props) => {
     const location = useLocation()
-
     React.useEffect(() => {
         if(props.initialized) {
             // console.log(location.pathname + location.search)
