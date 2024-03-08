@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import ReactGA from "react-ga"
 
+
 export const useAnalytics = () => {
     const [initialized, setInitialized] = useState(false);
     useEffect(() => {
