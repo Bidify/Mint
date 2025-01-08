@@ -4,12 +4,12 @@ import Home from "./pages/Home";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
-import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import ActiveWeb3Provider from "./contexts/Web3Context";
 
 import {
   RainbowKitProvider,
   connectorsForWallets,
+  getDefaultConfig,
 } from "@rainbow-me/rainbowkit";
 import { customChains } from "./constants/chains";
 
@@ -24,6 +24,7 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 
 import "./App.css";
+// import { Wrapper } from "./components/Wrapper";
 
 const connectors = connectorsForWallets(
   [
@@ -64,9 +65,11 @@ const App = () => {
         <RainbowKitProvider>
           <ActiveWeb3Provider>
             <BrowserRouter>
+              {/* <Wrapper> */}
               <Routes>
                 <Route path="/" element={<Home />} />
               </Routes>
+              {/* </Wrapper> */}
             </BrowserRouter>
           </ActiveWeb3Provider>
         </RainbowKitProvider>

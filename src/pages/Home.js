@@ -12,21 +12,18 @@ import instagram from "../assets/images/instagram.png";
 import discord from "../assets/images/discord.png";
 import youtube from "../assets/images/youtube.png";
 import auction from "../assets/images/auction.png";
-import { uploadToPinata } from "../utils/pinata";
 import { FetchWrapper } from "use-nft";
 import VerticalLinearStepper from "../components/Stepper";
-// import { switchNetwork } from "../wallet"
 import useWeb3 from "../hooks/useWeb3";
 
 import {
   FACTORY_ADDRESSES,
   NETWORKS,
-  // supportedChainIds,
   getLogUrl,
   snowApi,
   baseUrl,
   TOKEN_ADDRESSES,
-  // PINATA_KEY,
+  NetworkId,
 } from "../constants/config";
 import { ABI, BIDIFY, ERC721_ABI } from "../constants/abis";
 
@@ -39,25 +36,14 @@ import Policy from "../assets/docs/Bidify_Mint_Privacy_Policy.pdf";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { fetchArData, runUpload } from "../utils/arweave";
 import Footer from "../components/Footer";
-// import { create } from 'ipfs-http-client'
+import { useAnalytics } from "../utils/GoogleAnalytics";
 
 const postUrl = `https://cryptosi.us2.list-manage.com/subscribe/post?u=${process.env.REACT_APP_MAILCHIMP_U}&id=${process.env.REACT_APP_MAILCHIMP_ID}`;
-// const ipfs = create({ host: 'ipfs.infura.io', port: 5001, protocol: 'https', apiPath: '/ipfs/api/v0' })
-
-// const transackLogo = "https://www.gitbook.com/cdn-cgi/image/width=40,height=40,fit=contain,dpr=1.25,format=auto/https%3A%2F%2F2568214732-files.gitbook.io%2F~%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FyKT7ulakWzij4PDiIp6U%252Ficon%252FTbk5OkyEAiidHiC1yXpm%252FsK_Kgoxa_400x400.jpeg%3Falt%3Dmedia%26token%3Dacdf28e9-2036-4d48-93ce-dbd0eb6f5714"
 
 const Home = () => {
-  // const { account, library, activate, deactivate } = useWeb3React();
-
-  const {
-    address,
-    isConnected,
-    isConnecting,
-    // isReconnecting,
-    // connector,
-    chainId,
-    signer,
-  } = useWeb3(); // hook address, isconnected, inConnecting.. @dew
+  const { initialized } = useAnalytics();
+  console.log("GoogleAnalytics", initialized);
+  const { address, isConnected, chainId, signer } = useWeb3(); // hook address, isconnected, inConnecting.. @dew
 
   const [buffer, setBuffer] = useState();
   const [name, setName] = useState("");
@@ -73,7 +59,6 @@ const Home = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [transaction, setTransaction] = useState("");
   const [approved, setApproved] = useState(false);
-  // const [modalContent, setModalContent] = useState("");
   const [cost, setCost] = useState(0);
   const [collectionName, setCollectionName] = useState("");
   const [symbol, setSymbol] = useState("");
@@ -93,7 +78,6 @@ const Home = () => {
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [rate, setRate] = React.useState(0);
-  // const [email, setEmail] = useState("")
 
   const [open, setOpen] = useState(false);
   const [openCollection, setOpenCollection] = useState(false);
@@ -125,23 +109,14 @@ const Home = () => {
     });
     return () => {
       document.removeEventListener("click", handleClick);
-
-      console.log("hello");
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // useEffect(() => {
-  //   // if (chainId && chainId !== acceptedChainId) {
-  //   //   switchNetwork?.(acceptedChainId)
-  //   // }
-  //   console.log({ chainId, isConnecting });
-  // }, [chainId, isConnecting]);
 
   const getLogo = () => {
     return mintLogo;
   };
   const readImage = (event) => {
-    console.log(event.target.files.length);
     if (!event.target.files.length) {
       setBuffer(null);
       inputFile.current.value = "";
@@ -159,7 +134,6 @@ const Home = () => {
   };
 
   const getLogs = async () => {
-    // const web3 = new Web3(new Web3.providers.HttpProvider(URLS[chainId]));
     const topic0 =
       "0x5424fbee1c8f403254bd729bf71af07aa944120992dfa4f67cd0e7846ef7b8de";
     let logs = [];
@@ -176,45 +150,34 @@ const Home = () => {
       logs = ret.data.result;
     } catch (e) {
       setToast(e.message);
-      console.log(e.message);
     }
     return logs ? logs.length : 0;
   };
   const checkAllowd = async (address) => {
-    console.log(address, BIDIFY.address[chainId]);
-
     try {
       if (!BIDIFY.address[chainId]) {
-        throw "No auction for this chain";
+        throw new Error("No auction for this chain");
       }
       const allowed = await bidifyToken
         .isApprovedForAll(address, BIDIFY.address[chainId])
         .catch((err) => {
-          console.log("@dew1204/not allowed-------->", err);
-          throw "This is not allowed";
+          throw new Error("This is not allowed");
         });
       setApproved(allowed);
       setErc721(address);
     } catch (err) {
-      setToast(err);
+      setToast(err.message);
     }
   };
   const signList = async () => {
     setApproving(true);
     try {
-      const BidifyToken = new ethers.Contract(
-        erc721,
-        ERC721_ABI,
-        // library.getSigner() @modified by dew
-        signer
-      );
+      const BidifyToken = new ethers.Contract(erc721, ERC721_ABI, signer);
       const tx = await BidifyToken.setApprovalForAll(
         BIDIFY.address[chainId],
         true
       );
-      console.log("@dew1204/approve --------------->", tx);
-      const _tx = await tx.wait();
-      console.log("@dew1204/approve --------------->", _tx);
+      await tx.wait();
       await checkAllowd(erc721);
       setApproving(false);
     } catch (e) {
@@ -223,23 +186,7 @@ const Home = () => {
       console.log(e);
     }
   };
-  /**
-   * upload data to /bidify.org
-   * @param {*} data
-   * @param {*} forSale
-   * @dew1204
-   */
-  // const addToDatabase = async (data, forSale) => {
-  //   try {
-  //     if (forSale) {
-  //       await axios.post(`${baseUrl}/admin`, data);
-  //     } else {
-  //       await axios.post(`${baseUrl}/adminCollection`, data);
-  //     }
-  //   } catch (error) {
-  //     setToast(error.message);
-  //   }
-  // };
+
   const list = async (token, price, ending, days) => {
     const currency = "0x0000000000000000000000000000000000000000";
     const platform = erc721;
@@ -267,11 +214,8 @@ const Home = () => {
   };
   const getDetailFromId = async (id) => {
     try {
-      console.log("checking get detail from id = 1");
       const detail = await getListingDetail(id);
-      console.log("checking get detail from id = 2", detail);
       const fetchedValue = await getFetchValues(detail);
-      console.log("checking get detail from id = 3", fetchedValue);
       return { ...fetchedValue, ...detail, network: chainId };
     } catch (e) {
       console.log(e);
@@ -425,20 +369,19 @@ const Home = () => {
    * @dew1204
    */
   const getCost = async (_bidifyMinter = bidifyMinter) => {
-    // console.log(amount)
     try {
       if (!_bidifyMinter) {
-        throw "cannot read the bidifyMint contract";
+        throw new Error("cannot read the bidifyMint contract");
       }
       const mintCost = await _bidifyMinter
         .calculateCost(amount)
         .catch((err) => {
           setCost(0);
-          throw `err in contract.calculateCost call ${chainId}`;
+          throw new Error(`err in contract.calculateCost call ${chainId}`);
         });
       setCost(mintCost);
     } catch (err) {
-      console.log("@dew1204/getCost ----------->", err);
+      console.log("@dew1204/getCost ----------->", err.message);
     }
   };
   /**
@@ -449,14 +392,14 @@ const Home = () => {
     // @modified by dew
     try {
       if (!_bidifyMinter) {
-        throw "cannot read the bidifyMint contract";
+        throw new Error("cannot read the bidifyMint contract");
       }
       const collections = await _bidifyMinter.getCollections().catch((err) => {
-        throw `err in contract.getCollections call ${chainId}`;
+        throw new Error(`err in contract.getCollections call ${chainId}`);
       });
       setCollections(collections);
     } catch (err) {
-      console.log("@dew1204/getCollectionsData ------->", err);
+      console.log("@dew1204/getCollectionsData ------->", err.message);
       setCollections([]);
     }
   };
@@ -477,6 +420,7 @@ const Home = () => {
       setBidifyMinter(null);
       setBidifyToken(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, chainId, signer]);
 
   /**
@@ -487,15 +431,15 @@ const Home = () => {
     if (!buffer) {
       // throw "Upload data for minting NFT";
     } else if (!name) {
-      throw "Input name for NFT";
+      throw new Error("Input name for NFT");
     } else if (!description) {
-      throw "Input description for NFT";
+      throw new Error("Input description for NFT");
     } else if (advanced && !collectionName) {
-      throw "Input collection Name";
+      throw new Error("Input collection Name");
     } else if (advanced && !symbol) {
-      throw "Input symbol";
+      throw new Error("Input symbol");
     } else if (amount < 1) {
-      throw "invalid amount";
+      throw new Error("invalid amount");
     }
   };
 
@@ -504,8 +448,8 @@ const Home = () => {
       return {
         value: _mintCost,
         from: address,
-        gasLimit: 285000,
-        gasPrice: ethers.utils.parseUnits("300", "gwei"),
+        gasLimit: 1000000,
+        // gasPrice: ethers.utils.parseUnits("300", "gwei"),
       };
       // } else if (chainId === 80085) {
       //   return { value: _mintCost, from: address, gasLimit: 285000, gasPrice: ethers.utils.parseUnits('200', 'gwei') }
@@ -515,18 +459,11 @@ const Home = () => {
   };
 
   const onSubmit = async () => {
-    console.log("@dew1204/onSubmit-------------->", {
-      address: address,
-      chainId: chainId,
-      signer: signer,
-      factory: FACTORY_ADDRESSES[chainId],
-    });
-
     try {
       if (!isConnected) {
-        throw "Connect wallet before start.";
+        throw new Error("Connect wallet before start.");
       } else if (!bidifyMinter) {
-        throw "Can't not read contract, please reconnect the wallet";
+        throw new Error("Can't not read contract, please reconnect the wallet");
       }
 
       filterFormFields(); //filters all fields are valid
@@ -545,7 +482,6 @@ const Home = () => {
       setRate(0);
 
       const imageUrl = id ? `https://arweave.net/${id}` : undefined; // @snowman
-      console.log({ imageUrl });
 
       const metaContentType = ["Content-Type", "application/json"];
       const { id: metadataId } = await runUpload(
@@ -563,7 +499,6 @@ const Home = () => {
       setRate(0);
 
       const metadataUrl = id ? `https://arweave.net/${metadataId}` : undefined; // @snowman
-      console.log(metadataUrl);
 
       const dataToDatabase = {
         description: description,
@@ -587,78 +522,32 @@ const Home = () => {
       if (!advanced) exist = true;
       const mintCost = await bidifyMinter.calculateCost(amount).catch((err) => {
         console.log(err);
-        throw "Mint cost calculation failed.";
-      });
-
-      console.log("@dew1204 mint cost--------------->", {
-        tokenURIJson,
-        amount,
-        mintCost,
-      });
-
-      console.log("------------", {
-        uri: tokenURIJson.toString(),
-        amount,
-        collectionName: advanced
-          ? collectionName
-          : "TOKEN_ADDRESSES BidifyMint Nft",
-        symbol: advanced ? symbol : "SBN",
-        platform: advanced ? platform : TOKEN_ADDRESSES[chainId],
-        addition: {
-          value: mintCost,
-          from: address,
-          gasLimit: 3000000,
-          gasPrice: 3000000,
-        },
-      });
-      // const tx = await bidifyMinter.mint(tokenURIJson.toString(), amount, advanced ? collectionName : "TOKEN_ADDRESSES BidifyMint Nft", advanced ? symbol : "SBN", advanced ? platform : TOKEN_ADDRESSES[chainId], { value: mintCost, from: account, gasLimit:3000000, gasPrice:3000000})
-      console.log(
-        "@dew1204 ----------->",
-        platform,
-        advanced,
-        advanced ? platform : TOKEN_ADDRESSES[chainId]
-      );
-      console.log("@dew1204mint-------->", {
-        uri: tokenURIJson.toString(),
-        amount,
-        collection: advanced
-          ? collectionName
-          : "TOKEN_ADDRESSES BidifyMint Nft",
-        symbol: advanced ? symbol : "SBN",
-        platform: advanced ? platform : TOKEN_ADDRESSES[chainId],
-        etc: _mintData(mintCost),
+        throw new Error("Mint cost calculation failed.");
       });
 
       const tx = await bidifyMinter
         .mint(
           tokenURIJson.toString(),
           amount,
-          advanced ? collectionName : "TOKEN_ADDRESSES BidifyMint Nft",
-          advanced ? symbol : "SBN",
+          advanced ? collectionName : "StandardBidifyToken",
+          advanced ? symbol : "SBT",
           advanced ? platform : TOKEN_ADDRESSES[chainId],
           _mintData(mintCost)
         )
         .catch((err) => {
           console.log(err);
-          throw "NFT mint failed.";
+          throw new Error("NFT mint failed.");
         });
-      console.log("tx---------------->", tx);
       const txHash = await tx.wait().catch((err) => {
         console.log(err);
-        throw "Getting transaction failed.";
+        throw new Error("Getting transaction failed.");
       });
-      // await signList()
       setTransaction(txHash.transactionHash);
       if (!exist) {
         txHash.events.shift();
       }
-      // console.log('txHash', txHash)
       let tokenIds = [];
-      // if (chainId === 4 || chainId === 43114 || chainId === 56 || chainId === 100 || chainId === 61 || chainId === 1285 || chainId === 9001 || chainId === 10 || chainId === 42161) {
-      // }
-      console.log("@dew1204 tx event ------------->", txHash.events);
       if (chainId === 137) {
-        //if polygon
         txHash.events.forEach((item) => {
           if (item.data === "0x") {
             const hex = item.topics[3];
@@ -667,25 +556,16 @@ const Home = () => {
         });
       } else {
         tokenIds = txHash.events.map((event) => {
-          console.log(event);
           const hex =
             event.topics.length > 1 ? event.topics[3] : event.topics[0];
           return Number(ethers.utils.hexValue(hex));
         });
       }
-      console.log("@dew1204 tokenIds --------------->", tokenIds);
       setActiveStep(3);
       setRate(0);
 
       if (forSale) {
         const totalCount = await getLogs();
-        if (totalCount > 0) {
-          const latestDetail = await getDetailFromId(
-            (totalCount - 1).toString()
-          );
-          console.log(latestDetail);
-        }
-        console.log(tokenIds, totalCount);
         for (let i = 0; i < tokenIds.length; i++) {
           await list(tokenIds[i].toString(), bid, endingPrice, duration);
         }
@@ -710,7 +590,6 @@ const Home = () => {
           console.log(e.message ? e.message : e);
         }
         const data = await Promise.all(pData);
-        console.log("data from chain", data);
 
         //save data to db @dew1204
         await axios
@@ -721,7 +600,7 @@ const Home = () => {
           })
           .catch((err) => {
             console.log(err);
-            throw "Database saving failed.";
+            throw new Error("Database saving failed.");
           });
       } else {
         const data = [];
@@ -731,16 +610,18 @@ const Home = () => {
 
         //await addToDatabase(data, forSale);
         //save data to DB @dew1204
-        await axios
-          .post(`${baseUrl}/adminCollection`, data, {
-            onUploadProgress: ({ loaded, total }) => {
-              setRate(Math.floor((loaded * 100) / total));
-            },
-          })
-          .catch((err) => {
-            console.log(err);
-            throw "Database saving failed.";
-          });
+        if (chainId === NetworkId.INK)
+          await axios
+            .post(`${baseUrl}/adminCollection`, data, {
+              onUploadProgress: ({ loaded, total }) => {
+                setRate(Math.floor((loaded * 100) / total));
+              },
+            })
+            .catch((err) => {
+              console.log(err);
+              throw new Error("Database saving failed.");
+            });
+        else setRate(100);
       }
 
       setShowAlert(true);
@@ -771,13 +652,10 @@ const Home = () => {
   };
 
   useEffect(() => {
-    let exist = false;
-
     const _collection = collections.find(
       (item) => item.name === collectionName
     );
     if (_collection) {
-      exist = true;
       setSymbol(_collection.symbol);
       if (chainId !== 10 || chainId !== 42161) {
         // setErc721(_collection.platform);
@@ -795,7 +673,6 @@ const Home = () => {
   }, [collectionName, chainId]);
 
   const handleSelectCollection = (item) => {
-    console.log(item);
     setSymbolEditable(false);
     setOpenCollection(false);
     setCollectionName(item.name);
@@ -1073,9 +950,6 @@ const Home = () => {
           </svg>
         </a>
       </div>
-      {/* <span className="flex w-3 h-3">
-                
-            </span> */}
       <div className="fixed w-full flex justify-between py-1 px-4 items-center shadow-xl z-[999999] bg-[#0000003d] backdrop-filter backdrop-blur-[8px]">
         <img
           className="max-h-[40px] sm:max-h-[75px]"
@@ -1362,7 +1236,7 @@ const Home = () => {
                   </div>
                   <div
                     className="relative flex"
-                    // ref={collection}
+                    ref={collection}
                     id="collection"
                   >
                     <input
@@ -1492,7 +1366,7 @@ const Home = () => {
               id="amount"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#e48b24] focus:border-[#e48b24] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#e48b24] dark:focus:border-[#e48b24]"
               onChange={(e) => setAmount(Number(e.target.value))}
-              defaultValue={1}
+              value={amount}
               min={1}
             />
             {/* Is for Sale     */}
@@ -1712,7 +1586,7 @@ const Home = () => {
       </div>
       {toast && (
         <div
-          className={`w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow dark:bg-gray-800 dark:text-gray-400 fixed top-24 right-5`}
+          className={`w-full z-20 max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow dark:bg-gray-800 dark:text-gray-400 fixed top-24 right-5`}
           role="alert"
         >
           <div className="flex">

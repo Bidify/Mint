@@ -18,8 +18,6 @@ function decrypt(encryptedText, shift) {
 }
 const key = JSON.parse(decrypt(process.env.REACT_APP_KEY, 3));
 
-console.log(key);
-
 const initOptions = {
   host: "arweave.net", // Hostname or IP address for a Arweave host
   port: 443, // Port
@@ -42,17 +40,11 @@ export const runUpload = async (data, contentType, isUploadByChunk = false) => {
 
     while (!uploader.isComplete) {
       await uploader.uploadChunk();
-      console.log(
-        `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`
-      );
     }
   }
 
   //   Do we need to post with uploader?
   await arweave.transactions.post(tx);
-
-  //   console.log("url", `http://localhost:1984/${tx.id}`);
-  console.log("url", `https://arweave.net/${tx.id}`);
   return tx;
 };
 
@@ -60,10 +52,8 @@ export const fetchArData = async () => {
   try {
     // Convert the JWK to an Arweave address
     const address = await arweave.wallets.jwkToAddress(key);
-    console.log("AR Address:", address);
     const balanceInWinston = await arweave.wallets.getBalance(address);
     const balanceInAr = arweave.ar.winstonToAr(balanceInWinston);
-    console.log(`Balance for ${address}: ${balanceInAr} AR`);
     return { address, balanceInAr };
   } catch (error) {
     console.error("Error getting address:", error);

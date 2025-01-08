@@ -1,8 +1,7 @@
-import { chrome } from 'chrome';
+import { chrome } from "chrome";
 
 // Function to handle the background script's logic
 function handleBackgroundScriptLogic() {
-  console.log("Background script is running...");
   // Access Chrome API using chrome.tabs.sendMessage()
   chrome.tabs.sendMessage({ message: "someData" }, (response) => {
     if (!response.success) {

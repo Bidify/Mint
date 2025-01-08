@@ -488,22 +488,18 @@ export const ERC721_ABI = [
 export const BIDIFY = {
   //this is for auction
   address: {
-    [NetworkId.RINKEBY]: "0xE9f8f0267342c4b9e65C7Bc14c1b33877e10C817", //new tested
-    [NetworkId.ETHERGEM]: "0x159f569E2c35C7B5B601D222AFafc90edD23E1f9", //new tested
-    [NetworkId.AVALANCHE]: "0xED002B4F0b3167E9096F6f4674c18433dca96518", //new tested
-    [NetworkId.POLYGON]: "0x2FccEd65EeC83Bf2790bBc046013e13d6498038C", //new tested
-    [NetworkId.GNOSIS]: "0xcA592ed60C20085217C4529CF75638A0d71F1F02", //new tested
-    [NetworkId.ETC]: "0xD4e83E1Fc9d88730CA63Aaaffef168811BFC6D14", //new tested
-    [NetworkId.EVMOS]: "0x1779ac6Dc323528DcC93aE8716211FC7dEDb4294", //new tested
-    [NetworkId.MOONRIVER]: "0xD4e83E1Fc9d88730CA63Aaaffef168811BFC6D14", //new tested
-    [NetworkId.BSC]: "0xA878b8eB62B4a25308CA75B0c89C718F1448B50F", //new tested
-    [NetworkId.OPTIMISM]: "",
-    [NetworkId.ARBITRUM]: "",
-    [NetworkId.zkSyncTestnet]: "0x6eB662c9464F5bc1476efe8E1834E0d616568a8b",
-    [NetworkId.zkSyncMainnet]: "0x6eB662c9464F5bc1476efe8E1834E0d616568a8b",
-    [NetworkId.zkSyncMainnet]: "0x6eB662c9464F5bc1476efe8E1834E0d616568a8b",
-    [NetworkId.GOERLI]: "0xc77Ef11a940015012d17340105D6AABFD7baF168",
-    [NetworkId.INK]: "",
+    [NetworkId.AVALANCHE]: "0x6Caf1f39426a94fbc62A166B4b5ed18b4A189629",
+    [NetworkId.POLYGON]: "0x3aF036B46c2262D4fCdfBd12c7163584C213fa05",
+    [NetworkId.BSC]: "0x3aF036B46c2262D4fCdfBd12c7163584C213fa05",
+    [NetworkId.OPTIMISM]: "0x6Caf1f39426a94fbc62A166B4b5ed18b4A189629",
+    [NetworkId.ARBITRUM]: "0x6Caf1f39426a94fbc62A166B4b5ed18b4A189629",
+    [NetworkId.BASE]: "0x6Caf1f39426a94fbc62A166B4b5ed18b4A189629",
+    [NetworkId.LINEA]: "0x6Caf1f39426a94fbc62A166B4b5ed18b4A189629",
+    [NetworkId.SCROLL]: "0x3aF036B46c2262D4fCdfBd12c7163584C213fa05",
+    [NetworkId.MANTLE]: "0x6Caf1f39426a94fbc62A166B4b5ed18b4A189629",
+    [NetworkId.BLAST]: "0x6Caf1f39426a94fbc62A166B4b5ed18b4A189629",
+
+    [NetworkId.INK]: "0x0288EE0a9F900B6E0cd5522907548f3DA0cdace9",
   },
   abi: [
     {

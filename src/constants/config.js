@@ -1,83 +1,46 @@
-// import eth from "../assets/images/eth.png";
-import matic from "../assets/images/matic.png";
-import avax from "../assets/images/avax.png";
-// import egem from "../assets/images/egem.png";
-import bnb from "../assets/images/bnb.png";
-// import gnosis from "../assets/images/gnosis.png";
-import etc from "../assets/images/etc.png";
-// import klaytn from "../assets/images/klaytn.png";
-// import evmos from "../assets/images/evmos.png";
-// import moonriver from "../assets/images/moonriver.png";
-
 export const NetworkId = {
   POLYGON: 137,
-  // POLYGON_TESTNET: 80001,
-  RINKEBY: 4,
-  ETHEREUM: 1,
-  ETHERGEM: 1987,
   AVALANCHE: 43114,
   BSC: 56,
-  GNOSIS: 100,
-  ETC: 61,
-  KLAYTN: 8217,
   ARBITRUM: 42161,
   OPTIMISM: 10,
   MANTLE: 5000,
-  GOERLI: 5,
   SEPOLIA: 11155111,
   BASE: 8453,
   SCROLL: 534352,
-  BERA_TEST: 80085,
+  BLAST: 81457,
+  LINEA: 59144,
   INK: 763373,
-
-  // FUJI: 43113,
 };
 
 export const FACTORY_ADDRESSES = {
-  [NetworkId.BSC]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc", //verified & adjusted
-  [NetworkId.AVALANCHE]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc", //verified & adjusted
-  [NetworkId.POLYGON]: "0x58dD4052c3d4e4f020365AE4dfAE16d1Fdd1f763", //verified & adjusted
-  [NetworkId.ETC]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc", //verified & adjusted
-  [NetworkId.MANTLE]: "0xf58D78F353C67a1FeDf1C8dc60cF09c88B3b8ACc", //verified & adjusted
-  [NetworkId.SCROLL]: "0x21E17d7D4f6B6e4116591730CEec05EC63cF9924", //verified & adjusted
-  [NetworkId.BERA_TEST]: "0xD76e5a10702156c4155443EC93Ff634b6F12a312", //verified & adjusted
+  [NetworkId.BSC]: "0x453Fe1665352b9E831450328253D9CB991282806",
+  [NetworkId.AVALANCHE]: "0x453Fe1665352b9E831450328253D9CB991282806",
+  [NetworkId.POLYGON]: "0x453Fe1665352b9E831450328253D9CB991282806",
+  [NetworkId.MANTLE]: "0x453Fe1665352b9E831450328253D9CB991282806",
+  [NetworkId.SCROLL]: "0x453Fe1665352b9E831450328253D9CB991282806",
+  [NetworkId.LINEA]: "0x453Fe1665352b9E831450328253D9CB991282806",
+  [NetworkId.OPTIMISM]: "0x453Fe1665352b9E831450328253D9CB991282806",
+  [NetworkId.ARBITRUM]: "0x453Fe1665352b9E831450328253D9CB991282806",
+  [NetworkId.BLAST]: "0x453Fe1665352b9E831450328253D9CB991282806",
+  [NetworkId.BASE]: "0x453Fe1665352b9E831450328253D9CB991282806",
 
-  // [NetworkId.RINKEBY]: "0x0f79f4239F343fc932F357eFAAeE405a90d28e42", //verified
-  // [NetworkId.ETHERGEM]: "0x5A4Aa5B8f54763A22A7bE54F30Be650fe040b8eA", //
-  // [NetworkId.GNOSIS]: "0x86E25f1e266eA4831b3CBb68164753DcbA30D047", //verified
-  // [NetworkId.EVMOS]: "0x86E25f1e266eA4831b3CBb68164753DcbA30D047", //verified
-  // [NetworkId.MOONRIVER]: "0x86E25f1e266eA4831b3CBb68164753DcbA30D047", //verified
-  // [NetworkId.ARBITRUM]: "0x86E25f1e266eA4831b3CBb68164753DcbA30D047", //verified
-  // [NetworkId.OPTIMISM]: "0x04Fe964916B24deb3C2D7E6A8d9873b054E52492", //verified
-  // [NetworkId.zkSyncTestnet]: "0x694DCbFBD60e8C4923B130570Ba55Ba237c4f12A",
-  // [NetworkId.zkSyncMainnet]: "0x694DCbFBD60e8C4923B130570Ba55Ba237c4f12A",
-
-  // [NetworkId.GOERLI]: "0x42f12c2BCee63eFC1894f47D37e9535759C19ecA",//verified & adjusted
-  [NetworkId.GOERLI]: "0xdCeFcaA6ED6D4cAA953F8F7aB71978b6aD2107c0", //verified & adjusted
-  [NetworkId.SEPOLIA]: "0x09994c7E1eD02E56d097BcCFD0Da47dFF0F66e99", //verified
+  [NetworkId.SEPOLIA]: "0x09994c7E1eD02E56d097BcCFD0Da47dFF0F66e99",
   [NetworkId.INK]: "0xE9B64424dff8c6A1AbB4ee5Ff645d315E2E38e31",
 };
 export const TOKEN_ADDRESSES = {
-  [NetworkId.BSC]: "0x2861171F7a3dD05DC2E875374841D5C49a8e5dCB", //verified & adjusted
-  [NetworkId.AVALANCHE]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E", //verified & adjusted
-  [NetworkId.POLYGON]: "0x08E7733a6D2a7Fc0363Dae117F8608AAb518F996", //verified & adjusted
-  [NetworkId.ETC]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E", //verified & adjusted
-  [NetworkId.MANTLE]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E", //verified & adjusted
-  [NetworkId.SCROLL]: "0xD76e5a10702156c4155443EC93Ff634b6F12a312", //verified & adjusted
-  [NetworkId.BERA_TEST]: "0x21E17d7D4f6B6e4116591730CEec05EC63cF9924", //verified & adjusted
+  [NetworkId.BSC]: "0xF19526C03a52F4A3FE78A067717F5af6dB3a6696",
+  [NetworkId.AVALANCHE]: "0xF19526C03a52F4A3FE78A067717F5af6dB3a6696",
+  [NetworkId.POLYGON]: "0xF19526C03a52F4A3FE78A067717F5af6dB3a6696",
+  [NetworkId.MANTLE]: "0xF19526C03a52F4A3FE78A067717F5af6dB3a6696",
+  [NetworkId.SCROLL]: "0xF19526C03a52F4A3FE78A067717F5af6dB3a6696",
+  [NetworkId.LINEA]: "0xF19526C03a52F4A3FE78A067717F5af6dB3a6696",
+  [NetworkId.OPTIMISM]: "0xF19526C03a52F4A3FE78A067717F5af6dB3a6696",
+  [NetworkId.ARBITRUM]: "0xF19526C03a52F4A3FE78A067717F5af6dB3a6696",
+  [NetworkId.BLAST]: "0xF19526C03a52F4A3FE78A067717F5af6dB3a6696",
+  [NetworkId.BASE]: "0xF19526C03a52F4A3FE78A067717F5af6dB3a6696",
 
-  // [NetworkId.RINKEBY]: "0xFe4317e87958f5b408aF9d8fFf78F228435fd0C8",
-  // [NetworkId.ETHERGEM]: "0xf3195693ddb32822cdf759305a91b674ab1382e1",
-  // [NetworkId.GNOSIS]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
-  // [NetworkId.MOONRIVER]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
-  // [NetworkId.EVMOS]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
-  // [NetworkId.ARBITRUM]: "0xCbd697f76e90435Dce788ce14e096f732803fA71",
-  // [NetworkId.OPTIMISM]: "0xC254F215840EB03Ef7ff7E2707CB5787d529579a",
-  // [NetworkId.zkSyncTestnet]: "0x464Efc76aedddAD363dAd78375873456C0a21BBc",
-  // [NetworkId.zkSyncMainnet]: "0x464Efc76aedddAD363dAd78375873456C0a21BBc",
-
-  [NetworkId.GOERLI]: "0x92d53Ae63e427BB78B34c3D7eF8a0dA95f238697", //verified & adjusted
-  [NetworkId.SEPOLIA]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E", //verified
+  [NetworkId.SEPOLIA]: "0x7DA6DF0e81a6eD9F98B3fd374CF6bE4f3099216E",
   [NetworkId.INK]: "0xCc40157FF22eAC9ceB52a689b34e9055E279eA50",
 };
 
@@ -87,7 +50,6 @@ export const TOKEN_ADDRESSES = {
 // export const netOrder = [ 137, 56, 61, 100, 1987, 43114, 4, 1285, 9001]
 export const NETWORKS = {
   [NetworkId.POLYGON]: {
-    image: matic,
     label: "Polygon",
     symbol: "MATIC",
     chainId: 137,
@@ -95,31 +57,20 @@ export const NETWORKS = {
     url: "https://polygon-rpc.com",
   },
   [NetworkId.BSC]: {
-    image: bnb,
     label: "Binance Smart Chain",
     symbol: "BNB",
     chainId: 56,
     explorer: "https://bscscan.com",
-    url: "https://bsc-dataseed1.binance.org",
+    url: "https://bsc-dataseed.binance.org",
   },
   [NetworkId.MANTLE]: {
-    image: bnb,
     label: "Mantle",
     symbol: "MNT",
     chainId: 5000,
-    explorer: "https://explorer.mantle.xyz",
-    url: "https://explorer.mantle.xyz",
-  },
-  [NetworkId.ETC]: {
-    image: etc,
-    label: "Ethereum Classic",
-    chainId: 61,
-    symbol: "ETC",
-    explorer: "https://blockscout.com/etc/mainnet/", //"https://blockscout.com/etc/mainnet/",
-    url: "https://etc.etcdesktop.com",
+    explorer: "https://mantlescan.xyz",
+    url: "https://rpc.mantle.xyz",
   },
   [NetworkId.AVALANCHE]: {
-    image: avax,
     label: "Avalanche",
     symbol: "AVAX",
     chainId: 43114,
@@ -127,101 +78,66 @@ export const NETWORKS = {
     url: "https://api.avax.network/ext/bc/C/rpc",
   },
   [NetworkId.BASE]: {
-    image: avax,
     label: "BASE",
     chainId: 8453,
-    symbol: "BASE",
+    symbol: "ETH",
     explorer: "https://basescan.org",
     url: "https://mainnet.base.org",
   },
   [NetworkId.ARBITRUM]: {
-    image: "https://bridge.arbitrum.io/logo.png",
     label: "Arbitrum",
     symbol: "ETH",
     chainId: 42161,
     explorer: "https://arbiscan.io",
-    url: "",
+    url: "https://arb1.arbitrum.io/rpc",
   },
   [NetworkId.OPTIMISM]: {
-    image:
-      "https://assets-global.website-files.com/611dbb3c82ba72fbc285d4e2/611fd32ddac3c1856c306c37_optimism%20logo%20icon.svg",
     label: "Optimism",
     chainId: 10,
     symbol: "ETH",
     explorer: "https://optimistic.etherscan.io",
-    url: "",
+    url: "https://mainnet.optimism.io",
   },
   [NetworkId.SCROLL]: {
-    image:
-      "https://assets-global.website-files.com/611dbb3c82ba72fbc285d4e2/611fd32ddac3c1856c306c37_optimism%20logo%20icon.svg",
     label: "Scroll",
     chainId: 15343520,
     symbol: "ETH",
     explorer: "https://scrollscan.com",
-    url: "https://rpc.scroll.io",
+    url: "https://scroll-mainnet.infura.io/v3/208cb2f7413042f389a884515ae9e69d",
   },
-  [NetworkId.zkSyncTestnet]: {
-    image: "/zksync-arrows.svg",
-    label: "zkSyncTestnet",
-    chainId: 280,
-    explorer: "https://goerli.explorer.zksync.io", //"https://zksync2-testnet.zkscan.io/",
-    url: "https://testnet.era.zksync.dev",
-  },
-  [NetworkId.zkSyncMainnet]: {
-    image: "/zksync-arrows.svg",
-    label: "zkSyncMainnet",
-    chainId: 324,
-    explorer: "https://explorer.zksync.io", //"https://zksync2-mainnet.zkscan.io/",
-    url: "https://mainnet.era.zksync.io",
-  },
-
-  //testnet
-  [NetworkId.GOERLI]: {
-    image: "/ether.png",
-    label: "goerliTestnet",
-    chainId: 5,
+  [NetworkId.LINEA]: {
+    label: "Linea",
+    chainId: 59144,
     symbol: "ETH",
-    explorer: "https://goerli.etherscan.io", //"https://zksync2-mainnet.zkscan.io/",
-    url: "https://goerli.etherscan.io",
+    explorer: "https://lineascan.build",
+    url: "https://linea-mainnet.infura.io/v3/208cb2f7413042f389a884515ae9e69d",
   },
+  [NetworkId.BLAST]: {
+    label: "Blast",
+    chainId: 81457,
+    symbol: "ETH",
+    explorer: "https://blastscan.io",
+    url: "https://rpc.blast.io",
+  },
+  //testnet
   [NetworkId.SEPOLIA]: {
-    image: "/ether.png",
     label: "sepoliaTestnet",
     chainId: 11155111,
     symbol: "ETH",
-    explorer: "https://sepolia.etherscan.io", //"https://zksync2-mainnet.zkscan.io/",
+    explorer: "https://sepolia.etherscan.io",
     url: "https://sepolia.etherscan.io/",
   },
-  [NetworkId.BERA_TEST]: {
-    image: "/bera_test.avif",
-    label: "beraTestnet",
-    chainId: 80085,
-    symbol: "BERA",
-    explorer: "https://artio.beratrail.io/",
-    url: "https://api.routescan.io/v2/network/testnet/evm/80085/etherscan",
-  },
   [NetworkId.INK]: {
-    image: "/ink.png",
     label: "Ink",
     chainId: 763373,
     symbol: "INK",
     explorer: "https://explorer-sepolia.inkonchain.com/",
     url: "https://explorer-sepolia.inkonchain.com/api/v2/",
   },
-  // [NetworkId.KLAYTN]: {
-  //   image: klaytn,
-  //   label: "Klaytn Mainnet",
-  //   chainId: 8217
-  // }
-  // [NetworkId.FUJI]: {
-  //   image: avax,
-  //   label: "Avalanche Fuji",
-  //   chainId: 43113
-  // },
 };
 
-export const baseUrl = "https://bidify.cloud/api";
-// export const baseUrl = "http://localhost:8080/api"
+// export const baseUrl = "https://bidify.cloud/api";
+export const baseUrl = "http://localhost:5000/api";
 export const getLogUrl = {
   [NetworkId.POLYGON]:
     "https://api.polygonscan.com/api?module=logs&action=getLogs",
