@@ -100,7 +100,7 @@ export const NETWORKS = {
   },
   [NetworkId.SCROLL]: {
     label: "Scroll",
-    chainId: 15343520,
+    chainId: 534352,
     symbol: "ETH",
     explorer: "https://scrollscan.com",
     url: "https://scroll-mainnet.infura.io/v3/208cb2f7413042f389a884515ae9e69d",
@@ -136,8 +136,7 @@ export const NETWORKS = {
   },
 };
 
-// export const baseUrl = "https://bidify.cloud/api";
-export const baseUrl = "http://localhost:5000/api";
+export const baseUrl = "https://bidify.cloud/api";
 export const getLogUrl = {
   [NetworkId.POLYGON]:
     "https://api.polygonscan.com/api?module=logs&action=getLogs",
@@ -163,12 +162,11 @@ export const getLogUrl = {
     "https://api-sepolia.inkonchain.com/api/v2?module=logs&action=getLogs",
 };
 export const snowApi = {
-  43114: "Y72B4EMH42SYS5C3RGGIDJM9HPQKYUSUTH",
-  137: "XKIRV2YEWTDJIXRQSXB42PT78P1879NTJT",
-  4: "1GT2QR7K76T2EAU72UEP43M82W72TMQAU6",
-  56: "WYSBB1UFVWFNRVRMCRZ6PMI5XD3K1D2A9F",
+  43114: process.env.REACT_APP_SNOWAPI_43114 || "",
+  137: process.env.REACT_APP_SNOWAPI_137 || "",
+  4: process.env.REACT_APP_SNOWAPI_4 || "",
+  56: process.env.REACT_APP_SNOWAPI_56 || "",
 };
 
-export const PINATA_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIyZmRmYThiMi1hZjBmLTQ3ODktODc3Zi0zMDA5YjJlYzliZWYiLCJlbWFpbCI6ImphbmlzbGVlMTIwNEBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiM2NjM2IwNTQ5YmY4YjhiMjgxODMiLCJzY29wZWRLZXlTZWNyZXQiOiJkOTg3NmE1M2IxMzlhYzhlZmFjNTE5ODgxYmM2ZTNmNTAxZGY5MTgxZTYzOTJmODM0ZmYwNDRiYjFkZjE1NTc3IiwiaWF0IjoxNzA3MDU4NzA0fQ.a1DwUMFUIPsH6h2dI0UfrNdeLc0TLIlx27ADU3Fo0E8";
+export const PINATA_KEY = process.env.REACT_APP_PINATA_KEY || "";
 export const PINATA_URL = "https://api.pinata.cloud/pinning/pinFileToIPFS";
