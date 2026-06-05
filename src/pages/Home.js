@@ -657,14 +657,8 @@ const Home = () => {
       (item) => item.name === collectionName
     );
     if (_collection) {
-      setSymbol(_collection.symbol);
-      if (chainId !== 10 || chainId !== 42161) {
-        // setErc721(_collection.platform);
-        checkAllowd(_collection.platform);
-      }
+      // auto-select the platform address for non-standard chains
     } else {
-      setSymbolEditable(true);
-      setSymbol("");
       setErc721("");
       setApproved(false);
       setForSale(false);
@@ -686,7 +680,6 @@ const Home = () => {
     setType(null);
     setName("");
     setCollectionName("");
-    setSymbol("");
     setAmount(1);
     setDescription("");
     setBid(0);
