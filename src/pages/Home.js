@@ -1277,7 +1277,6 @@ const Home = () => {
                                 onClick={() => {
                                   setSelectedCollection(item);
                                   setOpenCollection(false);
-                                  checkAllowed(item.platform);
                                 }}
                                 className={`flex items-center justify-between w-full gap-2 px-4 py-2 text-gray-700 cursor-pointer text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white ${
                                   selectedCollection?.platform === item.platform
