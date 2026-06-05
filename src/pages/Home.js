@@ -65,6 +65,7 @@ const Home = () => {
   const [collections, setCollections] = useState([]);
   const [symbolEditable, setSymbolEditable] = useState(true);
   const [erc721, setErc721] = useState("");
+  const [selectedCollection, setSelectedCollection] = useState(null);
   const [toast, setToast] = useState("");
   const [advanced, setAdvanced] = useState(false);
   const [expand, setExpand] = useState(false);
@@ -434,10 +435,8 @@ const Home = () => {
       throw new Error("Input name for NFT");
     } else if (!description) {
       throw new Error("Input description for NFT");
-    } else if (advanced && !collectionName) {
-      throw new Error("Input collection Name");
-    } else if (advanced && !symbol) {
-      throw new Error("Input symbol");
+    } else if (advanced && !selectedCollection) {
+      throw new Error("Select a collection first, or create one in Collection Manager");
     } else if (amount < 1) {
       throw new Error("invalid amount");
     }
@@ -513,13 +512,17 @@ const Home = () => {
       const tokenURIJson = metadataUrl;
 
       let platform = ethers.constants.AddressZero;
-      for (let i = 0; i < collections.length; i++) {
-        if (collections[i].name === collectionName)
-          platform = collections[i].platform;
-      }
+      let exist = false;
 
-      let exist = platform === ethers.constants.AddressZero ? false : true;
-      if (!advanced) exist = true;
+      if (advanced && selectedCollection) {
+        // Use existing collection — no new contract deployment
+        platform = selectedCollection.platform;
+        exist = true;
+      } else if (!advanced) {
+        // Standard mint uses the predefined token address
+        platform = TOKEN_ADDRESSES[chainId];
+        exist = true;
+      }
       const mintCost = await bidifyMinter.calculateCost(amount).catch((err) => {
         console.log(err);
         throw new Error("Mint cost calculation failed.");
@@ -529,8 +532,8 @@ const Home = () => {
         .mint(
           tokenURIJson.toString(),
           amount,
-          advanced ? collectionName : "StandardBidifyToken",
-          advanced ? symbol : "SBT",
+          advanced && selectedCollection ? selectedCollection.name : "StandardBidifyToken",
+          advanced && selectedCollection ? selectedCollection.symbol : "SBT",
           advanced ? platform : TOKEN_ADDRESSES[chainId],
           _mintData(mintCost)
         )
@@ -675,10 +678,18 @@ const Home = () => {
   const handleSelectCollection = (item) => {
     setSymbolEditable(false);
     setOpenCollection(false);
+    setSelectedCollection(item);
     setCollectionName(item.name);
     setSymbol(item.symbol);
     // if (chainId !== 10 || chainId !== 42161) setErc721(item.platform);
   };
+
+  // Reset selected collection when advanced toggle changes
+  useEffect(() => {
+    if (!advanced) {
+      setSelectedCollection(null);
+    }
+  }, [advanced]);
   const handleDismiss = () => {
     setBuffer(null);
     inputFile.current.value = ""; //@dew1204 rest file input
@@ -1137,7 +1148,11 @@ const Home = () => {
                   />
                 </svg>
               )}
-              {advanced ? "Mint Advanced NFT" : "Mint TOKEN_ADDRESSES NFT"}
+              {advanced
+                ? selectedCollection
+                  ? `Mint into ${selectedCollection.name}`
+                  : "Select a Collection"
+                : "Mint NFT"}
             </button>
           </div>
           <div className="flex flex-col w-full">
@@ -1209,104 +1224,85 @@ const Home = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-            {/* Collection */}
+            {/* Collection Selector for Advanced NFTs */}
             {advanced && (
-              <div className="flex gap-2 mt-4">
-                <div className="flex-col flex-grow">
-                  <label
-                    htmlFor="collection"
-                    className="flex items-center gap-1 mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                  >
-                    Collection
-                    <img
-                      data-tooltip-target="tooltip-collection"
-                      className="w-[15px] h-[15px]"
-                      src={info}
-                      alt="info"
-                    />
-                  </label>
-                  <div
-                    id="tooltip-collection"
-                    role="tooltip"
-                    className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-[#e48b24] rounded-lg shadow-sm opacity-0 transition-opacity max-w-sm duration-300 tooltip dark:bg-gray-700"
-                  >
-                    You may name your collection if you intend to mint multiple
-                    NFTs belonging to the same collection (Case Sensitive)
-                    <div className="tooltip-arrow" data-popper-arrow></div>
+              <div className="flex flex-col gap-3 mt-4">
+                <label className="flex items-center gap-1 text-sm font-medium text-gray-900 dark:text-gray-300">
+                  Select Collection
+                  <img
+                    data-tooltip-target="tooltip-collection"
+                    className="w-[15px] h-[15px]"
+                    src={info}
+                    alt="info"
+                  />
+                </label>
+                <div
+                  id="tooltip-collection"
+                  role="tooltip"
+                  className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-[#e48b24] rounded-lg shadow-sm opacity-0 transition-opacity max-w-sm duration-300 tooltip dark:bg-gray-700"
+                >
+                  Select an existing collection to mint into. Create new collections in the Collection Manager.
+                  <div className="tooltip-arrow" data-popper-arrow></div>
+                </div>
+
+                {collections.length === 0 ? (
+                  <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center">
+                    <p className="text-gray-500 text-sm mb-2">
+                      You don't have any collections yet.
+                    </p>
+                    <a
+                      href="/collections"
+                      className="text-purple-600 hover:text-purple-700 text-sm font-medium"
+                    >
+                      → Go to Collection Manager to create one
+                    </a>
                   </div>
-                  <div
-                    className="relative flex"
-                    ref={collection}
-                    id="collection"
-                  >
-                    <input
-                      type="text"
-                      onClick={() => setOpenCollection(true)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#e48b24] focus:border-[#e48b24] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#e48b24] dark:focus:border-[#e48b24]"
-                      value={collectionName}
-                      onChange={(e) => setCollectionName(e.target.value)}
-                    />
+                ) : (
+                  <div className="relative" ref={collection} id="collection">
+                    <button
+                      type="button"
+                      onClick={() => setOpenCollection(!openCollection)}
+                      className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#e48b24] focus:border-[#e48b24] block p-2.5 text-left dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                      {selectedCollection
+                        ? `${selectedCollection.name} (${selectedCollection.symbol})`
+                        : "Select a collection..."}
+                    </button>
                     {openCollection && (
-                      <div className="z-10 mr-2 text-base list-none bg-white w-full absolute top-[45px] rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
-                        <ul
-                          className="w-full py-0"
-                          aria-labelledby="collectionField"
-                        >
-                          {collections
-                            .filter((item) =>
-                              item.name
-                                .toLowerCase()
-                                .includes(collectionName.toLowerCase())
-                            )
-                            .map((item) => {
-                              // const network = NETWORKS[networkId]
-                              return (
-                                <li key={item.platform}>
-                                  <span
-                                    onClick={() => handleSelectCollection(item)}
-                                    className="flex items-center w-full gap-2 px-4 py-1 text-gray-700 cursor-pointer text-md hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                                  >
-                                    {item.name}
-                                  </span>
-                                </li>
-                              );
-                            })}
+                      <div className="z-10 absolute mt-1 text-base list-none bg-white w-full rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
+                        <ul className="w-full py-0 max-h-60 overflow-y-auto">
+                          {collections.map((item) => (
+                            <li key={item.platform}>
+                              <span
+                                onClick={() => {
+                                  setSelectedCollection(item);
+                                  setOpenCollection(false);
+                                  checkAllowed(item.platform);
+                                }}
+                                className={`flex items-center justify-between w-full gap-2 px-4 py-2 text-gray-700 cursor-pointer text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white ${
+                                  selectedCollection?.platform === item.platform
+                                    ? "bg-purple-50 dark:bg-purple-900/30"
+                                    : ""
+                                }`}
+                              >
+                                <span>{item.name}</span>
+                                <span className="text-xs text-gray-400">
+                                  {item.symbol}
+                                </span>
+                              </span>
+                            </li>
+                          ))}
                         </ul>
                       </div>
                     )}
                   </div>
-                </div>
-                <div className="flex-col">
-                  <label
-                    htmlFor="symbol"
-                    className="flex items-center gap-1 mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                  >
-                    Symbol
-                    <img
-                      data-tooltip-target="tooltip-symbol"
-                      className="w-[15px] h-[15px]"
-                      src={info}
-                      alt="info"
-                    />
-                  </label>
-                  <div
-                    id="tooltip-symbol"
-                    role="tooltip"
-                    className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-[#e48b24] rounded-lg shadow-sm opacity-0 transition-opacity max-w-sm duration-300 tooltip dark:bg-gray-700"
-                  >
-                    Your collection should have a shortened 4 letter name
-                    <div className="tooltip-arrow" data-popper-arrow></div>
+                )}
+
+                {selectedCollection && (
+                  <div className="text-xs text-gray-500 font-mono break-all">
+                    Contract: {selectedCollection.platform}
                   </div>
-                  <input
-                    type="text"
-                    id="symbol"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#e48b24] focus:border-[#e48b24] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#e48b24] dark:focus:border-[#e48b24]"
-                    onChange={(e) => setSymbol(e.target.value)}
-                    maxLength={4}
-                    value={symbol}
-                    disabled={!symbolEditable}
-                  />
-                </div>
+                )}
               </div>
             )}
             {/* Description     */}
@@ -1569,7 +1565,11 @@ const Home = () => {
                   />
                 </svg>
               )}
-              {advanced ? "Mint Advanced NFT" : "Mint TOKEN_ADDRESSES NFT"}
+              {advanced
+                ? selectedCollection
+                  ? `Mint into ${selectedCollection.name}`
+                  : "Select a Collection"
+                : "Mint NFT"}
             </button>
 
             {isLoading && (
