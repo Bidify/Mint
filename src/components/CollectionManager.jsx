@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { useWeb3 } from "../hooks/useWeb3";
+import useWeb3 from "../hooks/useWeb3";
 import { ABI } from "../constants/abis";
 import { FACTORY_ADDRESSES } from "../constants/config";
 
