@@ -2,6 +2,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import CollectionManager from "./components/CollectionManager";
+import Layout from "./components/Layout";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
@@ -68,8 +69,8 @@ const App = () => {
             <BrowserRouter>
               {/* <Wrapper> */}
               <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/collections" element={<CollectionManager />} />
+                <Route path="/" element={<Layout><Home /></Layout>} />
+                <Route path="/collections" element={<Layout><CollectionManager /></Layout>} />
               </Routes>
               {/* </Wrapper> */}
             </BrowserRouter>

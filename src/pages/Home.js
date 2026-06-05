@@ -3,7 +3,6 @@ import bannerImg from "../assets/images/heroIllustration.svg";
 import bidifyLogo from "../assets/images/bidify.png";
 // import disturb from "../assets/images/disturb.png";
 import preview from "../assets/images/preview.svg";
-import mintLogo from "../assets/images/mintlogo.png";
 import info from "../assets/images/info.png";
 import telegram from "../assets/images/telegram.png";
 import tweeter from "../assets/images/tweeter.png";
@@ -33,7 +32,6 @@ import axios from "axios";
 import MailchimpSubscribe from "react-mailchimp-subscribe";
 import Terms from "../assets/docs/Bidify_Mint_Terms_and_Conditions.pdf";
 import Policy from "../assets/docs/Bidify_Mint_Privacy_Policy.pdf";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { fetchArData, runUpload } from "../utils/arweave";
 import Footer from "../components/Footer";
 import { useAnalytics } from "../utils/GoogleAnalytics";
@@ -112,9 +110,6 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getLogo = () => {
-    return mintLogo;
-  };
   const readImage = (event) => {
     if (!event.target.files.length) {
       setBuffer(null);
@@ -943,16 +938,7 @@ const Home = () => {
           </svg>
         </a>
       </div>
-      <div className="fixed w-full flex justify-between py-1 px-4 items-center shadow-xl z-[999999] bg-[#0000003d] backdrop-filter backdrop-blur-[8px]">
-        <img
-          className="max-h-[40px] sm:max-h-[75px]"
-          src={getLogo()}
-          alt="logo"
-        />
-        <div className="flex gap-0 my-0 sm:my-3 sm:gap-4">
-          <ConnectButton></ConnectButton>
-        </div>
-      </div>
+      {/* Header removed — now provided by Layout component */}
       <div className="bg-gradient-to-r from-[#e48b24] to-[#85623a] flex items-center justify-between px-4 pt-6 md:pt-24 pb-1 md:pb-0">
         <div className="flex flex-col items-start ml-12">
           <span className="text-white text-4xl font-bold max-w-[650px] leading-normal lg:block hidden">
