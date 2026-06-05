@@ -30,7 +30,7 @@ const CollectionManager = () => {
     if (isConnected && factoryAddress) {
       fetchCollections();
     }
-  }, [isConnected, chainId, fetchCollections]);
+  }, [isConnected, chainId, factoryAddress, fetchCollections]);
 
   // Create a new collection
   const handleCreate = async (e) => {
