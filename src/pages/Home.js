@@ -61,9 +61,7 @@ const Home = () => {
   const [approved, setApproved] = useState(false);
   const [cost, setCost] = useState(0);
   const [collectionName, setCollectionName] = useState("");
-  const [symbol, setSymbol] = useState("");
   const [collections, setCollections] = useState([]);
-  const [symbolEditable, setSymbolEditable] = useState(true);
   const [erc721, setErc721] = useState("");
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [toast, setToast] = useState("");
@@ -674,15 +672,6 @@ const Home = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collectionName, chainId]);
-
-  const handleSelectCollection = (item) => {
-    setSymbolEditable(false);
-    setOpenCollection(false);
-    setSelectedCollection(item);
-    setCollectionName(item.name);
-    setSymbol(item.symbol);
-    // if (chainId !== 10 || chainId !== 42161) setErc721(item.platform);
-  };
 
   // Reset selected collection when advanced toggle changes
   useEffect(() => {

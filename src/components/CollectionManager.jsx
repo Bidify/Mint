@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ethers } from "ethers";
 import useWeb3 from "../hooks/useWeb3";
 import { ABI } from "../constants/abis";
@@ -15,8 +15,7 @@ const CollectionManager = () => {
 
   const factoryAddress = FACTORY_ADDRESSES[chainId];
 
-  // Fetch user's collections
-  const fetchCollections = async () => {
+  const fetchCollections = useCallback(async () => {
     if (!factoryAddress || !signer) return;
     try {
       const contract = new ethers.Contract(factoryAddress, ABI, signer);
@@ -25,13 +24,13 @@ const CollectionManager = () => {
     } catch (err) {
       console.error("Failed to fetch collections:", err);
     }
-  };
+  }, [factoryAddress, signer]);
 
   useEffect(() => {
     if (isConnected && factoryAddress) {
       fetchCollections();
     }
-  }, [isConnected, chainId, factoryAddress, signer]);
+  }, [isConnected, chainId, fetchCollections]);
 
   // Create a new collection
   const handleCreate = async (e) => {
