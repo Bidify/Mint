@@ -3,7 +3,6 @@ import bannerImg from "../assets/images/heroIllustration.svg";
 import bidifyLogo from "../assets/images/bidify.png";
 // import disturb from "../assets/images/disturb.png";
 import preview from "../assets/images/preview.svg";
-import mintLogo from "../assets/images/mintlogo.png";
 import info from "../assets/images/info.png";
 import telegram from "../assets/images/telegram.png";
 import tweeter from "../assets/images/tweeter.png";
@@ -33,7 +32,6 @@ import axios from "axios";
 import MailchimpSubscribe from "react-mailchimp-subscribe";
 import Terms from "../assets/docs/Bidify_Mint_Terms_and_Conditions.pdf";
 import Policy from "../assets/docs/Bidify_Mint_Privacy_Policy.pdf";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { fetchArData, runUpload } from "../utils/arweave";
 import Footer from "../components/Footer";
 import { useAnalytics } from "../utils/GoogleAnalytics";
@@ -61,10 +59,9 @@ const Home = () => {
   const [approved, setApproved] = useState(false);
   const [cost, setCost] = useState(0);
   const [collectionName, setCollectionName] = useState("");
-  const [symbol, setSymbol] = useState("");
   const [collections, setCollections] = useState([]);
-  const [symbolEditable, setSymbolEditable] = useState(true);
   const [erc721, setErc721] = useState("");
+  const [selectedCollection, setSelectedCollection] = useState(null);
   const [toast, setToast] = useState("");
   const [advanced, setAdvanced] = useState(false);
   const [expand, setExpand] = useState(false);
@@ -113,9 +110,6 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getLogo = () => {
-    return mintLogo;
-  };
   const readImage = (event) => {
     if (!event.target.files.length) {
       setBuffer(null);
@@ -434,10 +428,8 @@ const Home = () => {
       throw new Error("Input name for NFT");
     } else if (!description) {
       throw new Error("Input description for NFT");
-    } else if (advanced && !collectionName) {
-      throw new Error("Input collection Name");
-    } else if (advanced && !symbol) {
-      throw new Error("Input symbol");
+    } else if (advanced && !selectedCollection) {
+      throw new Error("Select a collection first, or create one in Collection Manager");
     } else if (amount < 1) {
       throw new Error("invalid amount");
     }
@@ -513,13 +505,17 @@ const Home = () => {
       const tokenURIJson = metadataUrl;
 
       let platform = ethers.constants.AddressZero;
-      for (let i = 0; i < collections.length; i++) {
-        if (collections[i].name === collectionName)
-          platform = collections[i].platform;
-      }
+      let exist = false;
 
-      let exist = platform === ethers.constants.AddressZero ? false : true;
-      if (!advanced) exist = true;
+      if (advanced && selectedCollection) {
+        // Use existing collection — no new contract deployment
+        platform = selectedCollection.platform;
+        exist = true;
+      } else if (!advanced) {
+        // Standard mint uses the predefined token address
+        platform = TOKEN_ADDRESSES[chainId];
+        exist = true;
+      }
       const mintCost = await bidifyMinter.calculateCost(amount).catch((err) => {
         console.log(err);
         throw new Error("Mint cost calculation failed.");
@@ -529,8 +525,8 @@ const Home = () => {
         .mint(
           tokenURIJson.toString(),
           amount,
-          advanced ? collectionName : "StandardBidifyToken",
-          advanced ? symbol : "SBT",
+          advanced && selectedCollection ? selectedCollection.name : "StandardBidifyToken",
+          advanced && selectedCollection ? selectedCollection.symbol : "SBT",
           advanced ? platform : TOKEN_ADDRESSES[chainId],
           _mintData(mintCost)
         )
@@ -656,14 +652,8 @@ const Home = () => {
       (item) => item.name === collectionName
     );
     if (_collection) {
-      setSymbol(_collection.symbol);
-      if (chainId !== 10 || chainId !== 42161) {
-        // setErc721(_collection.platform);
-        checkAllowd(_collection.platform);
-      }
+      // auto-select the platform address for non-standard chains
     } else {
-      setSymbolEditable(true);
-      setSymbol("");
       setErc721("");
       setApproved(false);
       setForSale(false);
@@ -672,13 +662,12 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collectionName, chainId]);
 
-  const handleSelectCollection = (item) => {
-    setSymbolEditable(false);
-    setOpenCollection(false);
-    setCollectionName(item.name);
-    setSymbol(item.symbol);
-    // if (chainId !== 10 || chainId !== 42161) setErc721(item.platform);
-  };
+  // Reset selected collection when advanced toggle changes
+  useEffect(() => {
+    if (!advanced) {
+      setSelectedCollection(null);
+    }
+  }, [advanced]);
   const handleDismiss = () => {
     setBuffer(null);
     inputFile.current.value = ""; //@dew1204 rest file input
@@ -686,7 +675,6 @@ const Home = () => {
     setType(null);
     setName("");
     setCollectionName("");
-    setSymbol("");
     setAmount(1);
     setDescription("");
     setBid(0);
@@ -950,16 +938,7 @@ const Home = () => {
           </svg>
         </a>
       </div>
-      <div className="fixed w-full flex justify-between py-1 px-4 items-center shadow-xl z-[999999] bg-[#0000003d] backdrop-filter backdrop-blur-[8px]">
-        <img
-          className="max-h-[40px] sm:max-h-[75px]"
-          src={getLogo()}
-          alt="logo"
-        />
-        <div className="flex gap-0 my-0 sm:my-3 sm:gap-4">
-          <ConnectButton></ConnectButton>
-        </div>
-      </div>
+      {/* Header removed — now provided by Layout component */}
       <div className="bg-gradient-to-r from-[#e48b24] to-[#85623a] flex items-center justify-between px-4 pt-6 md:pt-24 pb-1 md:pb-0">
         <div className="flex flex-col items-start ml-12">
           <span className="text-white text-4xl font-bold max-w-[650px] leading-normal lg:block hidden">
@@ -1137,7 +1116,11 @@ const Home = () => {
                   />
                 </svg>
               )}
-              {advanced ? "Mint Advanced NFT" : "Mint TOKEN_ADDRESSES NFT"}
+              {advanced
+                ? selectedCollection
+                  ? `Mint into ${selectedCollection.name}`
+                  : "Select a Collection"
+                : "Mint NFT"}
             </button>
           </div>
           <div className="flex flex-col w-full">
@@ -1209,104 +1192,94 @@ const Home = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-            {/* Collection */}
+            {/* Collection Selector for Advanced NFTs */}
             {advanced && (
-              <div className="flex gap-2 mt-4">
-                <div className="flex-col flex-grow">
-                  <label
-                    htmlFor="collection"
-                    className="flex items-center gap-1 mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                  >
-                    Collection
-                    <img
-                      data-tooltip-target="tooltip-collection"
-                      className="w-[15px] h-[15px]"
-                      src={info}
-                      alt="info"
-                    />
-                  </label>
-                  <div
-                    id="tooltip-collection"
-                    role="tooltip"
-                    className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-[#e48b24] rounded-lg shadow-sm opacity-0 transition-opacity max-w-sm duration-300 tooltip dark:bg-gray-700"
-                  >
-                    You may name your collection if you intend to mint multiple
-                    NFTs belonging to the same collection (Case Sensitive)
-                    <div className="tooltip-arrow" data-popper-arrow></div>
+              <div className="flex flex-col gap-3 mt-4">
+                <label className="flex items-center gap-1 text-sm font-medium text-gray-900 dark:text-gray-300">
+                  Select Collection
+                  <img
+                    data-tooltip-target="tooltip-collection"
+                    className="w-[15px] h-[15px]"
+                    src={info}
+                    alt="info"
+                  />
+                </label>
+                <div
+                  id="tooltip-collection"
+                  role="tooltip"
+                  className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-[#e48b24] rounded-lg shadow-sm opacity-0 transition-opacity max-w-sm duration-300 tooltip dark:bg-gray-700"
+                >
+                  Select an existing collection to mint into. Create new collections in the Collection Manager.
+                  <div className="tooltip-arrow" data-popper-arrow></div>
+                </div>
+
+                {collections.length === 0 ? (
+                  <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center">
+                    <p className="text-gray-500 text-sm mb-3">
+                      You don't have any collections yet.
+                    </p>
+                    <button
+                      onClick={() => window.open('/collections', '_blank')}
+                      className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+                    >
+                      + Create New Collection
+                    </button>
                   </div>
-                  <div
-                    className="relative flex"
-                    ref={collection}
-                    id="collection"
-                  >
-                    <input
-                      type="text"
-                      onClick={() => setOpenCollection(true)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#e48b24] focus:border-[#e48b24] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#e48b24] dark:focus:border-[#e48b24]"
-                      value={collectionName}
-                      onChange={(e) => setCollectionName(e.target.value)}
-                    />
+                ) : (
+                  <div className="relative" ref={collection} id="collection">
+                    <button
+                      type="button"
+                      onClick={() => setOpenCollection(!openCollection)}
+                      className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#e48b24] focus:border-[#e48b24] block p-2.5 text-left dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                      {selectedCollection
+                        ? `${selectedCollection.name} (${selectedCollection.symbol})`
+                        : "Select a collection..."}
+                    </button>
                     {openCollection && (
-                      <div className="z-10 mr-2 text-base list-none bg-white w-full absolute top-[45px] rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
-                        <ul
-                          className="w-full py-0"
-                          aria-labelledby="collectionField"
-                        >
-                          {collections
-                            .filter((item) =>
-                              item.name
-                                .toLowerCase()
-                                .includes(collectionName.toLowerCase())
-                            )
-                            .map((item) => {
-                              // const network = NETWORKS[networkId]
-                              return (
-                                <li key={item.platform}>
-                                  <span
-                                    onClick={() => handleSelectCollection(item)}
-                                    className="flex items-center w-full gap-2 px-4 py-1 text-gray-700 cursor-pointer text-md hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                                  >
-                                    {item.name}
-                                  </span>
-                                </li>
-                              );
-                            })}
+                      <div className="z-10 absolute mt-1 text-base list-none bg-white w-full rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
+                        <ul className="w-full py-0 max-h-60 overflow-y-auto">
+                          {collections.map((item) => (
+                            <li key={item.platform}>
+                              <span
+                                onClick={() => {
+                                  setSelectedCollection(item);
+                                  setOpenCollection(false);
+                                }}
+                                className={`flex items-center justify-between w-full gap-2 px-4 py-2 text-gray-700 cursor-pointer text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white ${
+                                  selectedCollection?.platform === item.platform
+                                    ? "bg-purple-50 dark:bg-purple-900/30"
+                                    : ""
+                                }`}
+                              >
+                                <span>{item.name}</span>
+                                <span className="text-xs text-gray-400">
+                                  {item.symbol}
+                                </span>
+                              </span>
+                            </li>
+                          ))}
+                          <li className="border-t border-gray-200 dark:border-gray-600">
+                            <span
+                              onClick={() => {
+                                window.open('/collections', '_blank');
+                              }}
+                              className="flex items-center justify-center gap-1 px-4 py-2 text-purple-600 cursor-pointer text-sm font-medium hover:bg-purple-50 dark:hover:bg-gray-600 dark:text-purple-400"
+                            >
+                              + Create New Collection
+                            </span>
+                          </li>
                         </ul>
                       </div>
                     )}
                   </div>
-                </div>
-                <div className="flex-col">
-                  <label
-                    htmlFor="symbol"
-                    className="flex items-center gap-1 mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                  >
-                    Symbol
-                    <img
-                      data-tooltip-target="tooltip-symbol"
-                      className="w-[15px] h-[15px]"
-                      src={info}
-                      alt="info"
-                    />
-                  </label>
-                  <div
-                    id="tooltip-symbol"
-                    role="tooltip"
-                    className="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-[#e48b24] rounded-lg shadow-sm opacity-0 transition-opacity max-w-sm duration-300 tooltip dark:bg-gray-700"
-                  >
-                    Your collection should have a shortened 4 letter name
-                    <div className="tooltip-arrow" data-popper-arrow></div>
+                )}
+
+                {selectedCollection && (
+                  <div className="text-xs text-gray-500 font-mono break-all">
+                    Contract: {selectedCollection.platform}
                   </div>
-                  <input
-                    type="text"
-                    id="symbol"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#e48b24] focus:border-[#e48b24] block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-[#e48b24] dark:focus:border-[#e48b24]"
-                    onChange={(e) => setSymbol(e.target.value)}
-                    maxLength={4}
-                    value={symbol}
-                    disabled={!symbolEditable}
-                  />
-                </div>
+                )}
               </div>
             )}
             {/* Description     */}
@@ -1569,7 +1542,11 @@ const Home = () => {
                   />
                 </svg>
               )}
-              {advanced ? "Mint Advanced NFT" : "Mint TOKEN_ADDRESSES NFT"}
+              {advanced
+                ? selectedCollection
+                  ? `Mint into ${selectedCollection.name}`
+                  : "Select a Collection"
+                : "Mint NFT"}
             </button>
 
             {isLoading && (

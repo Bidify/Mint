@@ -50,6 +50,17 @@ export const ABI = [
   },
   {
     inputs: [
+      { internalType: "string", name: "collection", type: "string" },
+      { internalType: "string", name: "symbol", type: "string" },
+      { internalType: "address", name: "user", type: "address" },
+    ],
+    name: "createCollection",
+    outputs: [{ internalType: "contract BidifyToken", name: "", type: "address" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
       { internalType: "string", name: "uri", type: "string" },
       { internalType: "uint256", name: "count", type: "uint256" },
       { internalType: "string", name: "collection", type: "string" },
