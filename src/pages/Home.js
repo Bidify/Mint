@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import bannerImg from "../assets/images/heroIllustration.svg";
 import bidifyLogo from "../assets/images/bidify.png";
 // import disturb from "../assets/images/disturb.png";
@@ -43,7 +42,6 @@ const Home = () => {
   const { initialized } = useAnalytics();
   console.log("GoogleAnalytics", initialized);
   const { address, isConnected, chainId, signer } = useWeb3(); // hook address, isconnected, inConnecting.. @dew
-  const navigate = useNavigate();
 
   const [buffer, setBuffer] = useState();
   const [name, setName] = useState("");
@@ -1221,7 +1219,7 @@ const Home = () => {
                       You don't have any collections yet.
                     </p>
                     <button
-                      onClick={() => navigate('/collections')}
+                      onClick={() => window.open('/collections', '_blank')}
                       className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
                     >
                       + Create New Collection
@@ -1264,8 +1262,7 @@ const Home = () => {
                           <li className="border-t border-gray-200 dark:border-gray-600">
                             <span
                               onClick={() => {
-                                setOpenCollection(false);
-                                navigate('/collections');
+                                window.open('/collections', '_blank');
                               }}
                               className="flex items-center justify-center gap-1 px-4 py-2 text-purple-600 cursor-pointer text-sm font-medium hover:bg-purple-50 dark:hover:bg-gray-600 dark:text-purple-400"
                             >
