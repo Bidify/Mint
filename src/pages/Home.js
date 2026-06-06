@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import bannerImg from "../assets/images/heroIllustration.svg";
 import bidifyLogo from "../assets/images/bidify.png";
 // import disturb from "../assets/images/disturb.png";
@@ -42,6 +43,7 @@ const Home = () => {
   const { initialized } = useAnalytics();
   console.log("GoogleAnalytics", initialized);
   const { address, isConnected, chainId, signer } = useWeb3(); // hook address, isconnected, inConnecting.. @dew
+  const navigate = useNavigate();
 
   const [buffer, setBuffer] = useState();
   const [name, setName] = useState("");
@@ -1215,15 +1217,15 @@ const Home = () => {
 
                 {collections.length === 0 ? (
                   <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center">
-                    <p className="text-gray-500 text-sm mb-2">
+                    <p className="text-gray-500 text-sm mb-3">
                       You don't have any collections yet.
                     </p>
-                    <a
-                      href="/collections"
-                      className="text-purple-600 hover:text-purple-700 text-sm font-medium"
+                    <button
+                      onClick={() => navigate('/collections')}
+                      className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
                     >
-                      → Go to Collection Manager to create one
-                    </a>
+                      + Create New Collection
+                    </button>
                   </div>
                 ) : (
                   <div className="relative" ref={collection} id="collection">
@@ -1259,6 +1261,17 @@ const Home = () => {
                               </span>
                             </li>
                           ))}
+                          <li className="border-t border-gray-200 dark:border-gray-600">
+                            <span
+                              onClick={() => {
+                                setOpenCollection(false);
+                                navigate('/collections');
+                              }}
+                              className="flex items-center justify-center gap-1 px-4 py-2 text-purple-600 cursor-pointer text-sm font-medium hover:bg-purple-50 dark:hover:bg-gray-600 dark:text-purple-400"
+                            >
+                              + Create New Collection
+                            </span>
+                          </li>
                         </ul>
                       </div>
                     )}
